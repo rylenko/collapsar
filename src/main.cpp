@@ -1,16 +1,17 @@
+// TODO: docs
+
 #include <iostream>
-#include "algorithms/huffman.h"
+#include "algorithms/huffman_compressor.h"
+#include "algorithms/huffman_decompressor.h"
 
 int main() {
-	std::string hw{"Hello, world!"};
-	std::cout << hw << std::endl;
+	algorithms::HuffmanCompressor huffman_compressor;
+	algorithms::Compressor* compressor = &huffman_compressor;
 
-	unsigned char* data = reinterpret_cast<unsigned char*>(
-		const_cast<char*>(hw.c_str())
-	);
-	size_t data_len = hw.size();
-	huffman_compress(data, data_len);
+	algorithms::HuffmanDecompressor huffman_decompressor;
+	algorithms::Decompressor* decompressor = &huffman_decompressor;
 
-	std::cout << '[' << hw << ']' << std::endl;
+	compressor->compress(std::cin, std::cout);
+	decompressor->decompress(std::cin, std::cout);
 	return EXIT_SUCCESS;
 }
