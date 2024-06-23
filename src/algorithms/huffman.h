@@ -10,7 +10,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
- * Compresses passed data using Huffman's coding.
+ * Compresses passed data using the Huffman's coding algorithm.
  */
 void huffman_compress(unsigned char *, size_t);
 
