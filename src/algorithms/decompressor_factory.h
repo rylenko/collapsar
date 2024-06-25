@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <stdexcept>
 #include <string_view>
 
 #include "../core/decompressor.h"
@@ -10,7 +11,13 @@ namespace algorithms {
 
 class DecompressorFactory: public core::DecompressorFactory {
 	public:
-		std::unique_ptr<core::Decompressor> create(std::string_view name) override;
+		std::unique_ptr<core::Decompressor> create(
+			const std::string_view name
+		) override;
+};
+
+class DecompressorCreationError: public std::runtime_error {
+	using std::runtime_error::runtime_error;
 };
 
 } // namespace algorithms

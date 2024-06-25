@@ -1,5 +1,6 @@
 #include "decompressor_factory.h"
 
+#include <format>
 #include <memory>
 #include <string_view>
 
@@ -9,13 +10,15 @@
 namespace algorithms {
 
 std::unique_ptr<core::Decompressor> DecompressorFactory::create(
-	std::string_view name
+	const std::string_view name
 ) {
 	if (name == "huffman") {
 		return std::make_unique<HuffmanDecompressor>();
 	}
-	// TODO: exceptions
-	return std::make_unique<HuffmanDecompressor>();
+
+	throw DecompressorCreationError(
+		std::format("unknown decompressor \"{}\"", name)
+	);
 }
 
 } // namespace algorithms

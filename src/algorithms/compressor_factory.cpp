@@ -1,5 +1,6 @@
 #include "compressor_factory.h"
 
+#include <format>
 #include <memory>
 #include <string_view>
 
@@ -9,13 +10,13 @@
 namespace algorithms {
 
 std::unique_ptr<core::Compressor> CompressorFactory::create(
-	std::string_view name
+	const std::string_view name
 ) {
 	if (name == "huffman") {
 		return std::make_unique<HuffmanCompressor>();
 	}
-	// TODO: exceptions
-	return std::make_unique<HuffmanCompressor>();
+
+	throw CompressorCreationError(std::format("unknown compressor \"{}\"", name));
 }
 
 } // namespace algorithms

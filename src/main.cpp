@@ -24,6 +24,19 @@ int main() {
 	compressor->compress(std::cin, std::cout);
 	decompressor->decompress(std::cin, std::cout);
 
+	try {
+		compressor = compressor_factory->create("invalid-compressor");
+	} catch (const algorithms::CompressorCreationError& error) {
+		std::cout << "Failed to create compressor: " << error.what() << "."
+			<< std::endl;
+	}
+	try {
+		decompressor = decompressor_factory->create("invalid-decompressor");
+	} catch (const algorithms::DecompressorCreationError& error) {
+		std::cout << "Failed to create decompressor: " << error.what() << "."
+			<< std::endl;
+	}
+
 	delete compressor_factory;
 	delete decompressor_factory;
 	return EXIT_SUCCESS;
