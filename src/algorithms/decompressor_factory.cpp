@@ -1,7 +1,7 @@
 #include "decompressor_factory.h"
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "../core/decompressor.h"
 #include "huffman.h"
@@ -9,7 +9,7 @@
 namespace algorithms {
 
 std::unique_ptr<core::Decompressor> DecompressorFactory::create(
-	const std::string& name
+	std::string_view name
 ) {
 	if (name == "huffman") {
 		return std::make_unique<HuffmanDecompressor>();
