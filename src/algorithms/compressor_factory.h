@@ -9,15 +9,15 @@
 
 namespace algorithms {
 
+class CompressorCreationError: public std::runtime_error {
+	using std::runtime_error::runtime_error;
+};
+
 class CompressorFactory: public core::CompressorFactory {
 	public:
 		std::unique_ptr<core::Compressor> create(
 			const std::string_view name
 		) override;
-};
-
-class CompressorCreationError: public std::runtime_error {
-	using std::runtime_error::runtime_error;
 };
 
 } // namespace algorithms

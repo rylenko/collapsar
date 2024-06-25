@@ -9,15 +9,15 @@
 
 namespace algorithms {
 
+class DecompressorCreationError: public std::runtime_error {
+	using std::runtime_error::runtime_error;
+};
+
 class DecompressorFactory: public core::DecompressorFactory {
 	public:
 		std::unique_ptr<core::Decompressor> create(
 			const std::string_view name
 		) override;
-};
-
-class DecompressorCreationError: public std::runtime_error {
-	using std::runtime_error::runtime_error;
 };
 
 } // namespace algorithms
