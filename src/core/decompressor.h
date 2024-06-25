@@ -3,7 +3,7 @@
 #include <istream>
 #include <ostream>
 
-namespace algorithms {
+namespace core {
 
 class Decompressor {
 	public:
@@ -11,4 +11,4 @@ class Decompressor {
 		virtual void decompress(std::istream& input, std::ostream& output) = 0;
 };
 
-} // namespace algorithms
+} // namespace core
