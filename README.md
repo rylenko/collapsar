@@ -1,6 +1,6 @@
 # (WIP) Collapsar 🎇
 
-A simple file compression program.
+A simple program for sending and receiving compressed files.
 
 # Supported compression algorithms
 
