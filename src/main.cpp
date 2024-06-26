@@ -7,6 +7,7 @@
 
 #include "algorithms/compressor_factory.h"
 #include "algorithms/decompressor_factory.h"
+#include "core/analysis.h"
 #include "core/compressor.h"
 #include "core/compressor_factory.h"
 #include "core/decompressor.h"
@@ -50,6 +51,11 @@ int main(int argc, char** argv) {
 
 	delete compressor_factory;
 	delete decompressor_factory;
+
+	core::FrequenciesArray frequencies;
+	std::cout << "Length: " << core::calculate_frequencies(std::cin, frequencies)
+		<< std::endl;
+	std::cout << frequencies['a'] << ',' << frequencies['b'] << std::endl;
 
 	QApplication app{argc, argv};
 	gui::MainWindow main_window;

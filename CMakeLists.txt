@@ -15,6 +15,7 @@ qt_add_executable(${PROJECT_NAME}
 	src/algorithms/compressor_factory.cpp
 	src/algorithms/decompressor_factory.cpp
 	src/algorithms/huffman.cpp
+	src/core/analysis.cpp
 	src/gui/main_window.cpp
 	src/main.cpp
 )
