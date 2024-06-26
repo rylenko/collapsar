@@ -10,6 +10,16 @@ Lossless:
 
 # Build and install
 
+### Dependencies
+
+- Qt6
+
+### Build
+
+Coming soon...
+
+### Install
+
 Coming soon...
 
 # Ideas
