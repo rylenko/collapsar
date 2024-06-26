@@ -9,9 +9,8 @@
 
 namespace algorithms {
 
-std::unique_ptr<core::Decompressor> DecompressorFactory::create(
-	const std::string_view name
-) {
+std::unique_ptr<core::Decompressor>
+DecompressorFactory::create(const std::string_view name) {
 	if (name == "huffman") {
 		return std::make_unique<HuffmanDecompressor>();
 	}

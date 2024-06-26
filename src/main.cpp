@@ -11,10 +11,8 @@
 #include "core/decompressor_factory.h"
 
 int main() {
-	core::CompressorFactory* compressor_factory =
-		new algorithms::CompressorFactory();
-	core::DecompressorFactory* decompressor_factory =
-		new algorithms::DecompressorFactory();
+	auto compressor_factory = new algorithms::CompressorFactory();
+	auto decompressor_factory = new algorithms::DecompressorFactory();
 
 	std::unique_ptr<core::Compressor> compressor =
 		compressor_factory->create("huffman");
@@ -35,6 +33,16 @@ int main() {
 	} catch (const algorithms::DecompressorCreationError& error) {
 		std::cout << "Failed to create decompressor: " << error.what() << "."
 			<< std::endl;
+	}
+
+	std::cout << std::endl << "Compressors:" << std::endl;
+	for (const std::string& name : compressor_factory->get_names()) {
+		std::cout << name << std::endl;
+	}
+
+	std::cout << std::endl << "Decompressors:" << std::endl;
+	for (const std::string& name : decompressor_factory->get_names()) {
+		std::cout << name << std::endl;
 	}
 
 	delete compressor_factory;
