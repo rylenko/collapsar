@@ -3,16 +3,19 @@
 #include <iostream>
 #include <memory>
 
+#include <QApplication>
+
 #include "algorithms/compressor_factory.h"
 #include "algorithms/decompressor_factory.h"
 #include "core/compressor.h"
 #include "core/compressor_factory.h"
 #include "core/decompressor.h"
 #include "core/decompressor_factory.h"
+#include "gui/main_window.h"
 
-int main() {
-	auto compressor_factory = new algorithms::CompressorFactory();
-	auto decompressor_factory = new algorithms::DecompressorFactory();
+int main(int argc, char** argv) {
+	auto compressor_factory = new algorithms::CompressorFactory{};
+	auto decompressor_factory = new algorithms::DecompressorFactory{};
 
 	std::unique_ptr<core::Compressor> compressor =
 		compressor_factory->create("huffman");
@@ -47,5 +50,9 @@ int main() {
 
 	delete compressor_factory;
 	delete decompressor_factory;
-	return EXIT_SUCCESS;
+
+	QApplication app{argc, argv};
+	gui::MainWindow main_window;
+	main_window.showMaximized();
+	return app.exec();
 }

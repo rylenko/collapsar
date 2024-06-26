@@ -28,7 +28,7 @@ class DecompressorFactory:
 		}
 
 		std::unique_ptr<core::Decompressor>
-		create(const std::string_view name) override;
+		create(const std::string_view name) const override;
 };
 
 } // namespace algorithms

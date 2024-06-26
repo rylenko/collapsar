@@ -18,7 +18,8 @@ class DecompressorFactory {
 		virtual constexpr const std::array<std::string, N>&
 		get_names() const noexcept = 0;
 
-		virtual std::unique_ptr<Decompressor> create(std::string_view name) = 0;
+		virtual std::unique_ptr<Decompressor>
+		create(std::string_view name) const = 0;
 };
 
 } // namespace core

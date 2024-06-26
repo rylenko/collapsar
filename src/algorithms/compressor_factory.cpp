@@ -11,7 +11,7 @@
 namespace algorithms {
 
 std::unique_ptr<core::Compressor>
-CompressorFactory::create(const std::string_view name) {
+CompressorFactory::create(const std::string_view name) const {
 	if (name == "huffman") {
 		return std::make_unique<HuffmanCompressor>();
 	}

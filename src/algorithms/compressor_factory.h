@@ -27,7 +27,7 @@ class CompressorFactory:
 		}
 
 		std::unique_ptr<core::Compressor>
-		create(const std::string_view name) override;
+		create(const std::string_view name) const override;
 };
 
 } // namespace algorithms
