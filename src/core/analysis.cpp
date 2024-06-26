@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <istream>
 #include <limits>
@@ -12,7 +11,7 @@ namespace core {
 // TODO: test
 size_t calculate_frequencies(std::istream& stream, FrequenciesArray& to) {
 	// Ensure that we can store all unsigned char frequencies.
-	assert(std::size(to) >= std::numeric_limits<unsigned char>::max() + 1);
+	static_assert(std::size(to) >= std::numeric_limits<unsigned char>::max() + 1);
 
 	// Fill output array with zeros.
 	std::fill(to.begin(), to.end(), 0);

@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
 	delete compressor_factory;
 	delete decompressor_factory;
 
+	TODO: Create core/frequencies.h with Frequencies class [<<, operator[unsigned char], get_total() - length of the readed stream]
 	core::FrequenciesArray frequencies;
 	std::cout << "Length: " << core::calculate_frequencies(std::cin, frequencies)
 		<< std::endl;
