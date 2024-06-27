@@ -9,11 +9,11 @@ namespace core {
 
 // Counts the number of characters in total and individually.
 //
-// To get the number of a specific character, indexing by `char` is used. To
-// obtain the total count, `get_total()` is used.
+// Use indexing by `char` to get the count of a specific character. Use
+// `get_total()` to get the total count of characters.
 class CharCounter {
 	public:
-		// Counts storage type. Indexes are characters, values are counts.
+		// Counts storage type. Indexes are unsigned characters, values are counts.
 		using Counts = std::array<
 			size_t,
 			std::numeric_limits<unsigned char>::max() + 1>;
