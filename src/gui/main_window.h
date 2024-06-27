@@ -20,7 +20,6 @@ class MainWindow: public QMainWindow {
 		QPushButton* exit_button_;
 		QPushButton* file_dialog_button_;
 		QTextBrowser* file_names_browser_;
-
 };
 
-} // namespace gui
+}  // namespace gui

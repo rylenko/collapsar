@@ -1,17 +1,18 @@
-// TODO: docs
-
-#include <iostream>
-#include <memory>
+// TODO(rylenko): docs
 
 #include <QApplication>
 
+#include <iostream>
+#include <string>
+#include <memory>
+
 #include "algorithms/compressor_factory.h"
 #include "algorithms/decompressor_factory.h"
-#include "core/analysis.h"
 #include "core/compressor.h"
 #include "core/compressor_factory.h"
 #include "core/decompressor.h"
 #include "core/decompressor_factory.h"
+#include "core/frequency_counter.h"
 #include "gui/main_window.h"
 
 int main(int argc, char** argv) {
@@ -52,11 +53,13 @@ int main(int argc, char** argv) {
 	delete compressor_factory;
 	delete decompressor_factory;
 
-	TODO: Create core/frequencies.h with Frequencies class [<<, operator[unsigned char], get_total() - length of the readed stream]
-	core::FrequenciesArray frequencies;
-	std::cout << "Length: " << core::calculate_frequencies(std::cin, frequencies)
-		<< std::endl;
-	std::cout << frequencies['a'] << ',' << frequencies['b'] << std::endl;
+	core::FrequencyCounter counter;
+	std::cin >> counter;
+	std::cout << "Total: " << counter.get_total() << std::endl << "a: "
+		<< counter['a'] << ", b: " << counter['b'] << std::endl;
+	counter.reset();
+	std::cout << "[After reset] Total: " << counter.get_total() << std::endl
+		<< "a: " << counter['a'] << ", b: " << counter['b'] << std::endl;
 
 	QApplication app{argc, argv};
 	gui::MainWindow main_window;

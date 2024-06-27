@@ -11,24 +11,20 @@
 
 namespace algorithms {
 
-inline constexpr std::array<std::string, 1> DECOMPRESSOR_NAMES{"huffman"};
-
 class DecompressorCreationError: public std::runtime_error {
 	using std::runtime_error::runtime_error;
 };
 
-class DecompressorFactory:
-	public core::DecompressorFactory<std::size(DECOMPRESSOR_NAMES)>
-{
+class DecompressorFactory: public core::DecompressorFactory<1> {
 	public:
-		inline constexpr
-		const std::array<std::string, std::size(DECOMPRESSOR_NAMES)>&
-		get_names() const noexcept override {
-			return DECOMPRESSOR_NAMES;
+		constexpr static Names NAMES{"huffman"};
+
+		constexpr const Names& get_names() const noexcept override {
+			return NAMES;
 		}
 
-		std::unique_ptr<core::Decompressor>
-		create(const std::string_view name) const override;
+		std::unique_ptr<core::Decompressor> create(
+			const std::string_view name) const override;
 };
 
-} // namespace algorithms
+}  // namespace algorithms

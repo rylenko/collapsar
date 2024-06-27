@@ -8,7 +8,8 @@ namespace core {
 class Compressor {
 	public:
 		virtual ~Compressor() = default;
+
 		virtual void compress(std::istream& input, std::ostream& output) = 0;
 };
 
-} // namespace core
+}  // namespace core

@@ -9,9 +9,10 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	output << "This is Huffman compressor." << std::endl;
 }
 
-void HuffmanDecompressor::decompress(std::istream& input, std::ostream& output)
-{
+void HuffmanDecompressor::decompress(
+		std::istream& input,
+		std::ostream& output) {
 	output << "This is Huffman decompressor." << std::endl;
 }
 
-} // namespace algorithms
+}  // namespace algorithms

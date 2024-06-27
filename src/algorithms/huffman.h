@@ -18,4 +18,4 @@ class HuffmanDecompressor: public core::Decompressor {
 		void decompress(std::istream& input, std::ostream& output) override;
 };
 
-} // namespace algorithms
+}  // namespace algorithms

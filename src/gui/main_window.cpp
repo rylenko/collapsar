@@ -13,7 +13,7 @@
 namespace gui {
 
 MainWindow::MainWindow(QWidget* parent): QMainWindow{parent} {
-	// TODO: split into the small functions.
+	// TODO(rylenko): split into the small functions.
 
 	// Create exit button.
 	exit_button_ = new QPushButton{"Exit", this};
@@ -60,4 +60,4 @@ void MainWindow::handle_file_dialog_button_() {
 	}
 }
 
-} // namespace gui
+}  // namespace gui
