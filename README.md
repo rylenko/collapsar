@@ -12,7 +12,8 @@ Lossless:
 
 ### Dependencies
 
-- Qt6
+- CMake.
+- Qt 6.
 
 ### Build
 
