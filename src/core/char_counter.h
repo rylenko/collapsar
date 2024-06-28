@@ -19,10 +19,12 @@ class CharCounter {
 			std::numeric_limits<unsigned char>::max() + 1>;
 
 		// Counts characters from the passed stream.
-		friend std::istream& operator>>(std::istream &input, CharCounter& counter);
+		friend std::istream& operator>>(
+			std::istream &input,
+			CharCounter& counter) noexcept;
 
 		// Gets a constant reference to the count of the passed `ch`aracter.
-		constexpr Counts::const_reference operator[](char ch) const {
+		constexpr Counts::const_reference operator[](char ch) const noexcept {
 			return counts_[static_cast<unsigned char>(ch)];
 		}
 

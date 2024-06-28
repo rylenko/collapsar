@@ -4,7 +4,7 @@
 
 namespace core {
 
-std::istream& operator>>(std::istream& stream, CharCounter& counter) {
+std::istream& operator>>(std::istream& stream, CharCounter& counter) noexcept {
 	for (char ch; stream.get(ch);) {
 		counter.count_(ch);
 	}
