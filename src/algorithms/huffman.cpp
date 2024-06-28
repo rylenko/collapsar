@@ -23,7 +23,7 @@ class Node {
 
 		// A node is less than another if its frequency is higher. That is, the most
 		// frequent node requires less weight.
-		constexpr friend bool operator<(const Node& x, const Node& y) noexcept;
+		friend constexpr bool operator<(const Node& x, const Node& y) noexcept;
 
 		constexpr size_t get_freq() const noexcept {
 			return freq_;
@@ -49,10 +49,15 @@ class Tree {
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Count frequencies of characters.
 	core::FreqCounter freq_counter;
+	// TODO(rylenko): test input error
 	input >> freq_counter;
 
 	// Build a tree using counted frequencies.
 	Tree tree{freq_counter};
+
+	// TODO(rylenko): test input error
+	// Rewind the stream to apply tree path codes to characters.
+	input.seekg(0);
 
 	output << "This is Huffman decompressor." << std::endl;
 }
