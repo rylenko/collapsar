@@ -1,6 +1,5 @@
 #include "compressor_factory.h"
 
-#include <array>
 #include <format>
 #include <memory>
 #include <string_view>

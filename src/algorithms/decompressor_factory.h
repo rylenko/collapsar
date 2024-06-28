@@ -1,9 +1,7 @@
 #pragma once
 
-#include <array>
 #include <memory>
 #include <stdexcept>
-#include <string>
 #include <string_view>
 
 #include "../core/decompressor.h"
