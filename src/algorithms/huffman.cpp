@@ -6,12 +6,14 @@
 namespace algorithms {
 
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
+	(void)input;
 	output << "This is Huffman compressor." << std::endl;
 }
 
 void HuffmanDecompressor::decompress(
 		std::istream& input,
 		std::ostream& output) {
+	(void)input;
 	output << "This is Huffman decompressor." << std::endl;
 }
 
