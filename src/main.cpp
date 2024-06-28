@@ -1,4 +1,4 @@
-// TODO(rylenko): docs
+// TODO(rylenko): docs and tests
 
 #include <QApplication>
 
@@ -12,7 +12,6 @@
 #include "core/compressor_factory.h"
 #include "core/decompressor.h"
 #include "core/decompressor_factory.h"
-#include "core/char_counter.h"
 #include "gui/main_window.h"
 
 int main(int argc, char** argv) {
@@ -52,11 +51,6 @@ int main(int argc, char** argv) {
 
 	delete compressor_factory;
 	delete decompressor_factory;
-
-	core::CharCounter counter;
-	std::cin >> counter;
-	std::cout << "Total: " << counter.get_total() << std::endl << "a: "
-		<< counter['a'] << ", b: " << counter['b'] << std::endl;
 
 	QApplication app{argc, argv};
 	gui::MainWindow main_window;
