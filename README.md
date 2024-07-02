@@ -8,18 +8,43 @@ Lossless:
 
 - [Huffman coding](https://wikipedia.org/wiki/Huffman_coding).
 
-# Build and install
+# Installation
 
-### Dependencies
+### Check dependencies
 
-- CMake.
-- Qt 6.
+Building system —  [CMake](https://en.wikipedia.org/wiki/CMake).
+Testing library —  [Google Test](https://en.wikipedia.org/wiki/Google_Test).
+GUI —  [Qt 6](https://www.qt.io/product/qt6).
 
-### Build
+### Development build
 
-Coming soon...
+1. Prepare build directory:
 
-### Install
+```
+$ mkdir build
+$ cd build
+$ cmake ..
+```
+
+2. Build the project:
+
+```
+$ cmake --build .
+```
+
+3. Test it if you need:
+
+```
+$ ./test
+```
+
+4. Run a development build:
+
+```
+$ ./collapsar
+```
+
+### Release build
 
 Coming soon...
 

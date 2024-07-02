@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
+# Include utilities.
+include(FetchContent)
+
 # Configure the project.
 project(collapsar VERSION 0.1.0 LANGUAGES CXX)
 
@@ -15,8 +18,9 @@ else()
 	add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 endif()
 
-# Configure Qt.
+# Find the Qt 6 library.
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+# Setup Qt 6 project.
 qt_standard_project_setup()
 qt_add_executable(${PROJECT_NAME}
 	src/algorithms/compressor_factory.cpp
@@ -29,3 +33,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	WIN32_EXECUTABLE ON
 	MACOSX_BUNDLE ON)
+
+# Fetch testing library.
+FetchContent_Declare(googletest
+	URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip
+)
+FetchContent_MakeAvailable(googletest)
+# Add test files and link them with the test library.
+add_executable(test
+	tests/core/freq_counter.cpp
+)
+target_link_libraries(test gtest_main)
