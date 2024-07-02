@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <string_view>
 
-#include "../core/decompressor.h"
-#include "../core/decompressor_factory.h"
+#include "core/decompressor.h"
+#include "core/decompressor_factory.h"
 
 namespace algorithms {
 

@@ -6,6 +6,9 @@ include(FetchContent)
 # Configure the project.
 project(collapsar VERSION 0.1.0 LANGUAGES CXX)
 
+# Add include directories.
+include_directories(src)
+
 # Configure compilation.
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -41,6 +44,7 @@ FetchContent_Declare(googletest
 FetchContent_MakeAvailable(googletest)
 # Add test files and link them with the test library.
 add_executable(test
+	src/core/freq_counter.cpp
 	tests/core/freq_counter.cpp
 )
 target_link_libraries(test gtest_main)

@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "../core/comparator.h"
-#include "../core/freq_counter.h"
+#include "core/comparator.h"
+#include "core/freq_counter.h"
 
 namespace algorithms {
 

@@ -3,8 +3,8 @@
 #include <istream>
 #include <ostream>
 
-#include "../core/compressor.h"
-#include "../core/decompressor.h"
+#include "core/compressor.h"
+#include "core/decompressor.h"
 
 namespace algorithms {
 

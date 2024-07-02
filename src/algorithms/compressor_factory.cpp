@@ -4,7 +4,7 @@
 #include <memory>
 #include <string_view>
 
-#include "../core/compressor.h"
+#include "core/compressor.h"
 #include "huffman.h"
 
 namespace algorithms {
