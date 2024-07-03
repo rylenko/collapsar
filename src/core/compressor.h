@@ -20,6 +20,19 @@ class Compressor {
 		virtual void compress(std::istream& input, std::ostream& output) = 0;
 
 	protected:
+		// Tries to set passed `exceptions` to the passed `ios`.
+		template <class CharT, class Traits>
+		static void set_ios_exceptions_(
+				std::basic_ios<CharT, Traits>& ios, std::ios_base::iostate exceptions) {
+			// Try to set exception mask.
+			try {
+				ios.exceptions(exceptions);
+			} catch (const std::ios_base::failure& e) {
+				throw CompressorError(std::format(
+					"failed to set exceptions to compressor's ios: {}", e.what()));
+			}
+		}
+
 		// Tries to replace current exception mask with `failbit | badbit` exception
 		// mask.
 		//
