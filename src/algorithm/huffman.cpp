@@ -54,12 +54,7 @@ class Tree {
 };
 
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
-	// Validate input stream.
-	if (!dynamic_cast<std::ifstream*>(&input)) {
-		throw core::CompressorError(
-			"Huffman compression requires double reads using seek, so only file streams"
-			" are supported");
-	}
+	validate_input_is_ifstream_(input);
 
 	// TODO: core::Compressor::replace_stream_exceptions.
 	// Save original input stream exceptions to restore them after custom mask.
@@ -109,6 +104,15 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	} catch (const std::ios_base::failure& e) {
 		throw core::CompressorError(std::format(
 			"failed to restore exceptions for input stream: {}", e.what()));
+	}
+}
+
+void HuffmanCompressor::validate_input_is_ifstream_(
+		const std::istream& input) {
+	if (!dynamic_cast<const std::ifstream*>(&input)) {
+		throw core::CompressorError(
+			"Huffman compression requires double reads using seek, so only file streams"
+			" are supported");
 	}
 }
 
