@@ -7,7 +7,7 @@
 #include "core/decompressor.h"
 #include "huffman.h"
 
-namespace algorithms {
+namespace algorithm {
 
 std::unique_ptr<core::Decompressor> DecompressorFactory::create(
 		const std::string_view name) const {
@@ -20,4 +20,4 @@ std::unique_ptr<core::Decompressor> DecompressorFactory::create(
 	);
 }
 
-}  // namespace algorithms
+}  // namespace algorithm

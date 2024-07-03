@@ -6,7 +6,7 @@
 #include "core/compressor.h"
 #include "core/decompressor.h"
 
-namespace algorithms {
+namespace algorithm {
 
 class HuffmanCompressor: public core::Compressor {
 	public:
@@ -18,4 +18,4 @@ class HuffmanDecompressor: public core::Decompressor {
 		void decompress(std::istream& input, std::ostream& output) override;
 };
 
-}  // namespace algorithms
+}  // namespace algorithm

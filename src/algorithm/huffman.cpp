@@ -14,7 +14,7 @@
 #include "core/comparator.h"
 #include "core/freq_counter.h"
 
-namespace algorithms {
+namespace algorithm {
 
 class Node {
 	public:
@@ -129,4 +129,4 @@ constexpr Tree::Tree(
 	}
 }
 
-}  // namespace algorithms
+}  // namespace algorithm

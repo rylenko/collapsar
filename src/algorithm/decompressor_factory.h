@@ -7,7 +7,7 @@
 #include "core/decompressor.h"
 #include "core/decompressor_factory.h"
 
-namespace algorithms {
+namespace algorithm {
 
 class DecompressorCreationError: public std::runtime_error {
 	using std::runtime_error::runtime_error;
@@ -25,4 +25,4 @@ class DecompressorFactory: public core::DecompressorFactory<1> {
 			const std::string_view name) const override;
 };
 
-}  // namespace algorithms
+}  // namespace algorithm

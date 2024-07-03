@@ -7,7 +7,7 @@
 #include "core/compressor.h"
 #include "huffman.h"
 
-namespace algorithms {
+namespace algorithm {
 
 std::unique_ptr<core::Compressor> CompressorFactory::create(
 		const std::string_view name) const {
@@ -18,4 +18,4 @@ std::unique_ptr<core::Compressor> CompressorFactory::create(
 	throw CompressorCreationError(std::format("unknown compressor \"{}\"", name));
 }
 
-}  // namespace algorithms
+}  // namespace algorithm

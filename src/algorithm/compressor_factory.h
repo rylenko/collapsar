@@ -7,7 +7,7 @@
 #include "core/compressor.h"
 #include "core/compressor_factory.h"
 
-namespace algorithms {
+namespace algorithm {
 
 class CompressorCreationError: public std::runtime_error {
 	using std::runtime_error::runtime_error;
@@ -25,4 +25,4 @@ class CompressorFactory: public core::CompressorFactory<1> {
 			const std::string_view name) const override;
 };
 
-}  // namespace algorithms
+}  // namespace algorithm

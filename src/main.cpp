@@ -6,8 +6,8 @@
 #include <string>
 #include <memory>
 
-#include "algorithms/compressor_factory.h"
-#include "algorithms/decompressor_factory.h"
+#include "algorithm/compressor_factory.h"
+#include "algorithm/decompressor_factory.h"
 #include "core/compressor.h"
 #include "core/compressor_factory.h"
 #include "core/decompressor.h"
@@ -15,8 +15,8 @@
 #include "gui/main_window.h"
 
 int main(int argc, char** argv) {
-	auto compressor_factory = new algorithms::CompressorFactory{};
-	auto decompressor_factory = new algorithms::DecompressorFactory{};
+	auto compressor_factory = new algorithm::CompressorFactory{};
+	auto decompressor_factory = new algorithm::DecompressorFactory{};
 
 	std::unique_ptr<core::Compressor> compressor =
 		compressor_factory->create("huffman");
@@ -28,13 +28,13 @@ int main(int argc, char** argv) {
 
 	try {
 		compressor = compressor_factory->create("invalid-compressor");
-	} catch (const algorithms::CompressorCreationError& error) {
+	} catch (const algorithm::CompressorCreationError& error) {
 		std::cout << "Failed to create compressor: " << error.what() << "."
 			<< std::endl;
 	}
 	try {
 		decompressor = decompressor_factory->create("invalid-decompressor");
-	} catch (const algorithms::DecompressorCreationError& error) {
+	} catch (const algorithm::DecompressorCreationError& error) {
 		std::cout << "Failed to create decompressor: " << error.what() << "."
 			<< std::endl;
 	}
