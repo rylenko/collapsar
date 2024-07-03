@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "core/comparator.h"
+#include "core/compressor.h"
 #include "core/freq_counter.h"
 
 namespace algorithm {
@@ -54,18 +55,12 @@ class Tree {
 };
 
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
+	// Huffman compression requires double read. So to seek later we need to
+	// require input to be ifstream.
 	validate_input_is_ifstream_(input);
-
-	// TODO: core::Compressor::replace_stream_exceptions.
-	// Save original input stream exceptions to restore them after custom mask.
-	const auto input_original_exceptions = input.exceptions();
-	// Try to set failbit and badbit exception mask.
-	try {
-		input.exceptions(std::istream::failbit | std::istream::badbit);
-	} catch (const std::ios_base::failure& e) {
-		throw core::CompressorError(std::format(
-			"failed to set failbit|badbit to the input stream: {}", e.what()));
-	}
+	// Enable exceptions for the input stream and save original exception mask.
+	auto input_original_exceptions =
+		core::Compressor::set_ios_fail_and_bad_exceptions_(input);
 
 	// Frequencies counter of input stream characters.
 	core::FreqCounter freq_counter;
@@ -73,7 +68,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	try {
 		input >> freq_counter;
 	} catch (const std::ios_base::failure& e) {
-		// Handle standalone fail or bad bits.
+		// Throw an error if eofbit was not set.
 		if (!input.eof()) {
 			throw core::CompressorError(std::format(
 				"failed to count frequencies: {}", e.what()));
