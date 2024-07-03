@@ -7,8 +7,6 @@
 #include "core/compressor.h"
 #include "core/compressor_factory.h"
 
-namespace {
-
 TEST(CompressorFactory, create) {
 	// Create the factory.
 	std::unique_ptr<core::CompressorFactory<1>> factory =
@@ -20,6 +18,4 @@ TEST(CompressorFactory, create) {
 
 	// Test unknown compressor creation.
 	EXPECT_THROW(factory->create("unknown"), algorithm::CompressorCreationError);
-}
-
 }

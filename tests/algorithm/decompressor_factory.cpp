@@ -7,8 +7,6 @@
 #include "core/decompressor.h"
 #include "core/decompressor_factory.h"
 
-namespace {
-
 TEST(DecompressorFactory, create) {
 	// Create the factory.
 	std::unique_ptr<core::DecompressorFactory<1>> factory =
@@ -22,6 +20,4 @@ TEST(DecompressorFactory, create) {
 	// Test unknown decompressor creation.
 	EXPECT_THROW(
 		factory->create("unknown"), algorithm::DecompressorCreationError);
-}
-
 }

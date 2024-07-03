@@ -4,8 +4,6 @@
 
 #include "core/freq_counter.h"
 
-namespace {
-
 TEST(FreqCounter, all) {
 	core::FreqCounter counter;
 
@@ -27,6 +25,4 @@ TEST(FreqCounter, all) {
 	EXPECT_EQ(counter['l'], 2);
 	EXPECT_EQ(counter['p'], 2);
 	EXPECT_EQ(counter['u'], 1);
-}
-
 }
