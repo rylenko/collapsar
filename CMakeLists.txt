@@ -45,10 +45,12 @@ FetchContent_MakeAvailable(googletest)
 # Add test files and link them with the test library.
 add_executable(test
 	src/algorithm/compressor_factory.cpp
+	src/algorithm/decompressor_factory.cpp
 	src/algorithm/huffman.cpp
 	src/core/freq_counter.cpp
 
 	tests/core/freq_counter.cpp
 	tests/algorithm/compressor_factory.cpp
+	tests/algorithm/decompressor_factory.cpp
 )
 target_link_libraries(test gtest_main)
