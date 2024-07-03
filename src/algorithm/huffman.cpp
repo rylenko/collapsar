@@ -59,8 +59,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// require input to be ifstream.
 	validate_input_is_ifstream_(input);
 	// Enable exceptions for the input stream and save original exception mask.
-	auto input_original_exceptions =
-		core::Compressor::set_ios_fail_and_bad_exceptions_(input);
+	auto input_original_exceptions = set_ios_fail_and_bad_exceptions_(input);
 
 	// Frequencies counter of input stream characters.
 	core::FreqCounter freq_counter;
