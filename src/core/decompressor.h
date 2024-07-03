@@ -2,6 +2,7 @@
 
 #include <istream>
 #include <ostream>
+#include <stdexcept>
 
 namespace core {
 
@@ -12,6 +13,11 @@ class Decompressor {
 
 		// Virtual method for decompressing data from `input` to `output`.
 		virtual void decompress(std::istream& input, std::ostream& output) = 0;
+};
+
+// Decompressor error.
+class DecompressorError: public std::runtime_error {
+	using std::runtime_error::runtime_error;
 };
 
 }  // namespace core

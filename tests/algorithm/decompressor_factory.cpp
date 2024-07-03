@@ -18,6 +18,5 @@ TEST(DecompressorFactory, create) {
 		dynamic_cast<algorithm::HuffmanDecompressor*>(decompressor.get()));
 
 	// Test unknown decompressor creation.
-	EXPECT_THROW(
-		factory->create("unknown"), algorithm::DecompressorCreationError);
+	EXPECT_THROW(factory->create("unknown"), core::DecompressorFactoryError);
 }

@@ -4,7 +4,7 @@
 
 namespace core {
 
-std::istream& operator>>(std::istream& stream, FreqCounter& counter) noexcept {
+std::istream& operator>>(std::istream& stream, FreqCounter& counter) {
 	for (unsigned char ch; stream.get(reinterpret_cast<char&>(ch));) {
 		counter.count_(ch);
 	}

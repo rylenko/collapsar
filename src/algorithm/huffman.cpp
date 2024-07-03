@@ -4,11 +4,12 @@
 #include <cstddef>
 
 #include <algorithm>
+#include <format>
+#include <fstream>
+#include <ios>
 #include <istream>
-#include <limits>
 #include <ostream>
 #include <stdexcept>
-#include <utility>
 #include <vector>
 
 #include "core/comparator.h"
@@ -53,19 +54,62 @@ class Tree {
 };
 
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
-	// Count frequencies of characters.
+	// Validate input stream.
+	if (!dynamic_cast<std::ifstream*>(&input)) {
+		throw core::CompressorError(
+			"Huffman compression requires double reads using seek, so only file streams"
+			" are supported");
+	}
+
+	// TODO: core::Compressor::replace_stream_exceptions.
+	// Save original input stream exceptions to restore them after custom mask.
+	const auto input_original_exceptions = input.exceptions();
+	// Try to set failbit and badbit exception mask.
+	try {
+		input.exceptions(std::istream::failbit | std::istream::badbit);
+	} catch (const std::ios_base::failure& e) {
+		throw core::CompressorError(std::format(
+			"failed to set failbit|badbit to the input stream: {}", e.what()));
+	}
+
+	// Frequencies counter of input stream characters.
 	core::FreqCounter freq_counter;
-	// TODO(rylenko): test input error
-	input >> freq_counter;
+	// Count frequencies of characters.
+	try {
+		input >> freq_counter;
+	} catch (const std::ios_base::failure& e) {
+		// Handle standalone fail or bad bits.
+		if (!input.eof()) {
+			throw core::CompressorError(std::format(
+				"failed to count frequencies: {}", e.what()));
+		}
+		// Clear EOF state (eofbit and failbit) to seek to the beginning of the
+		// stream later.
+		input.clear();
+	}
 
 	// Build a tree using counted frequencies.
-	Tree tree{freq_counter};
+	const Tree tree{freq_counter};
 
-	// TODO(rylenko): test input error
-	// Rewind the stream to apply tree path codes to characters.
-	input.seekg(0);
+	// Seek to the beginning of the input to read again and compress characters
+	// using built tree path codes.
+	try {
+		input.seekg(0, std::ios::beg);
+	} catch (const std::ios_base::failure& e) {
+		throw core::CompressorError(std::format(
+			"failed to seek to the beginning of the input stream: {}", e.what()));
+	}
 
 	output << "This is Huffman decompressor." << std::endl;
+
+	// TODO: core::Compressor::set_stream_exceptions.
+	// Try to restore input's original exception mask.
+	try {
+		input.exceptions(input_original_exceptions);
+	} catch (const std::ios_base::failure& e) {
+		throw core::CompressorError(std::format(
+			"failed to restore exceptions for input stream: {}", e.what()));
+	}
 }
 
 void HuffmanDecompressor::decompress(

@@ -17,5 +17,5 @@ TEST(CompressorFactory, create) {
 	EXPECT_TRUE(dynamic_cast<algorithm::HuffmanCompressor*>(compressor.get()));
 
 	// Test unknown compressor creation.
-	EXPECT_THROW(factory->create("unknown"), algorithm::CompressorCreationError);
+	EXPECT_THROW(factory->create("unknown"), core::CompressorFactoryError);
 }

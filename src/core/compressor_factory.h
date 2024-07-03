@@ -4,6 +4,7 @@
 
 #include <array>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -25,6 +26,11 @@ class CompressorFactory {
 
 		// Virtual method to create a compressor using passed `name`, if one exists.
 		virtual std::unique_ptr<Compressor> create(std::string_view name) const = 0;
+};
+
+// Compressor factory error.
+class CompressorFactoryError: public std::runtime_error {
+	using std::runtime_error::runtime_error;
 };
 
 }  // namespace core

@@ -28,13 +28,13 @@ int main(int argc, char** argv) {
 
 	try {
 		compressor = compressor_factory->create("invalid-compressor");
-	} catch (const algorithm::CompressorCreationError& error) {
+	} catch (const core::CompressorFactoryError& error) {
 		std::cout << "Failed to create compressor: " << error.what() << "."
 			<< std::endl;
 	}
 	try {
 		decompressor = decompressor_factory->create("invalid-decompressor");
-	} catch (const algorithm::DecompressorCreationError& error) {
+	} catch (const core::DecompressorFactoryError& error) {
 		std::cout << "Failed to create decompressor: " << error.what() << "."
 			<< std::endl;
 	}

@@ -4,6 +4,7 @@
 
 #include <array>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -27,6 +28,11 @@ class DecompressorFactory {
 		// exists.
 		virtual std::unique_ptr<Decompressor> create(
 			std::string_view name) const = 0;
+};
+
+// Decompressor factory error.
+class DecompressorFactoryError: public std::runtime_error {
+	using std::runtime_error::runtime_error;
 };
 
 }  // namespace core

@@ -17,9 +17,8 @@ class FreqCounter {
 		using Counts = std::array<
 			size_t, std::numeric_limits<unsigned char>::max() + 1>;
 
-		// Counts characters from the passed stream.
-		friend std::istream& operator>>(
-			std::istream &input, FreqCounter& counter) noexcept;
+		// Counts characters of the passed stream until EOF.
+		friend std::istream& operator>>(std::istream &input, FreqCounter& counter);
 
 		// Gets a constant reference to the count of the passed `ch`aracter.
 		constexpr Counts::const_reference operator[](
