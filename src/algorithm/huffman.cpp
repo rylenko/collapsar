@@ -30,7 +30,8 @@ class Node {
 		// constructor both cannot be `nullptr`, you need to use another constructor.
 		constexpr Node(Node* left, Node* right) noexcept;
 
-		// TODO(rylenko): ~Node();
+		// Destructs the node.
+		constexpr ~Node() noexcept;
 
 		// A node is less than another if its frequency is higher. That is, the most
 		// frequent node requires less weight.
@@ -59,7 +60,10 @@ class Tree {
 		// eofbit and failbit.
 		explicit Tree(std::istream& input);
 
-		// TODO(rylenko): ~Tree();
+		// Destructs the built tree.
+		constexpr ~Tree() noexcept;
+
+		// TODO: Paths=std::array<std::string, unsigned char max> calculate_paths()
 
 	private:
 		Node* root_;
@@ -117,14 +121,27 @@ constexpr Node::Node(Node* const left, Node* const right) noexcept
 	freq_ = left->freq_ + right->freq_;
 }
 
+constexpr Node::~Node() noexcept {
+	// Destruct and deallocate the left node if exists.
+	if (nullptr != left_) {
+		left_->~Node();
+		delete left_;
+	}
+
+	// Destruct and deallocate the right node if exists.
+	if (nullptr != right_) {
+		left_->~Node();
+		delete left_;
+	}
+}
+
 constexpr bool operator<(const Node& x, const Node& y) noexcept {
 	return x.freq_ > y.freq_;
 }
 
 Tree::Tree(std::istream& input): root_{nullptr} {
 	// Count frequencies of characters.
-	core::FreqCounter freq_counter;
-	try {
+	core::FreqCounter freq_counter; try {
 		input >> freq_counter;
 	} catch (const core::FreqCounterError& e) {
 		throw core::CompressorError(
@@ -156,6 +173,15 @@ Tree::Tree(std::istream& input): root_{nullptr} {
 	// Replace current `nullptr` root with built root.
 	if (!nodes.empty()) {
 		root_ = nodes[0];
+	}
+}
+
+constexpr Tree::~Tree() noexcept {
+	if (nullptr != root_) {
+		// Call node's destructor to free possible left and right subnodes.
+		root_->~Node();
+		// Free allocated node.
+		delete root_;
 	}
 }
 
