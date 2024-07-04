@@ -1,12 +1,12 @@
-#include "decompressor_factory.h"
+#include "algorithm/decompressor_factory.h"
 
 #include <format>
 #include <memory>
 #include <string_view>
 
+#include "algorithm/huffman.h"
 #include "core/decompressor.h"
 #include "core/decompressor_factory.h"
-#include "huffman.h"
 
 namespace algorithm {
 

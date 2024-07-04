@@ -1,4 +1,4 @@
-#include "huffman.h"
+#include "algorithm/huffman.h"
 
 #include <cassert>
 #include <cstddef>
@@ -18,6 +18,8 @@
 
 namespace algorithm {
 
+// Huffman compression tree node to store characters with corresponsing
+// frequency or left and right nodes.
 class Node {
 	public:
 		// Creates a character node with the corresponding frequency. The left and
@@ -47,9 +49,16 @@ class Node {
 		Node* right_;
 };
 
+// Huffman compression characters tree.
 class Tree {
 	public:
+		// Counts the frequencies of content from the `input`, then builds a tree,
+		// where the more frequent characters are closer to the root.
+		//
+		// After successfully construction, the stream must be in the EOF state:
+		// eofbit and failbit.
 		explicit Tree(std::istream& input);
+
 		// TODO(rylenko): ~Tree();
 
 	private:
@@ -60,16 +69,20 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Huffman compression requires double read. So to seek later we need to
 	// require input to be ifstream.
 	validate_input_is_ifstream_(input);
-	// Enable exceptions for the input stream and save original exception mask.
-	auto input_original_exceptions = set_ios_fail_and_bad_exceptions_(input);
 
 	// Build the tree of input data.
 	Tree tree{input};
+	// Clear EOF state (eofbit and failbit) to seek to the beginning of the
+	// stream.
+	input.clear();
+	// Seek to the beginning of the input to give the ability to read content
+	// again later.
+	input.seekg(0, std::ios::beg);
+	if (!input.good()) {
+		throw core::CompressorError("failed to seek to the beginning of the input");
+	}
 
 	output << "This is Huffman decompressor." << std::endl;
-
-	// Restore input's original exception mask.
-	set_ios_exceptions_(input, input_original_exceptions);
 }
 
 void HuffmanCompressor::validate_input_is_ifstream_(
@@ -109,28 +122,13 @@ constexpr bool operator<(const Node& x, const Node& y) noexcept {
 }
 
 Tree::Tree(std::istream& input): root_{nullptr} {
-	// Frequencies counter of input stream characters.
-	core::FreqCounter freq_counter;
 	// Count frequencies of characters.
+	core::FreqCounter freq_counter;
 	try {
 		input >> freq_counter;
-	} catch (const std::ios_base::failure& e) {
-		// Throw an error if eofbit was not set.
-		if (!input.eof()) {
-			throw core::CompressorError(std::format(
-				"failed to count frequencies: {}", e.what()));
-		}
-		// Clear EOF state (eofbit and failbit) to seek to the beginning of the
-		// stream later.
-		input.clear();
-	}
-	// Seek to the beginning of the input to give the ability to read content
-	// again later.
-	try {
-		input.seekg(0, std::ios::beg);
-	} catch (const std::ios_base::failure& e) {
-		throw core::CompressorError(std::format(
-			"failed to seek to the beginning of the input stream: {}", e.what()));
+	} catch (const core::FreqCounterError& e) {
+		throw core::CompressorError(
+			std::format("failed to count frequencies: {}", e.what()));
 	}
 
 	// Character nodes to store frequencies greater than 0.
@@ -142,6 +140,7 @@ Tree::Tree(std::istream& input): root_{nullptr} {
 			nodes.push_back(new Node(ch, freq_counter[ch]));
 		}
 	} while (0 != ++ch);
+
 	// Build a tree of nodes. The most frequent nodes have the shortest path.
 	while (nodes.size() > 1) {
 		// Sort nodes. See less operator implementation for more.
