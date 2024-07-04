@@ -8,8 +8,10 @@
 #include <fstream>
 #include <ios>
 #include <istream>
+#include <map>
 #include <ostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "core/comparator.h"
@@ -24,7 +26,7 @@ class Node {
 	public:
 		// Creates a character node with the corresponding frequency. The left and
 		// right branches are `nullptr`.
-		constexpr Node(unsigned char ch, size_t freq) noexcept;
+		constexpr Node(char ch, size_t freq) noexcept;
 
 		// Creates a grouping node with left and right branches. In the case of this
 		// constructor both cannot be `nullptr`, you need to use another constructor.
@@ -40,7 +42,7 @@ class Node {
 	private:
 		// A character with a certain frequency or a random character if the left and
 		// right branches are set.
-		unsigned char ch_;
+		char ch_;
 		// Character frequency or the sum of the frequencies of the left and right
 		// branches. Must be greater than 0.
 		size_t freq_;
@@ -63,7 +65,8 @@ class Tree {
 		// Destructs the built tree.
 		constexpr ~Tree() noexcept;
 
-		// TODO: Paths=std::array<std::string, unsigned char max> calculate_paths()
+		// Calculate paths. So this function calculates tree path for each character.
+		std::map<char, std::string> calculate_paths() const noexcept;
 
 	private:
 		Node* root_;
@@ -104,7 +107,7 @@ void HuffmanDecompressor::decompress(
 	output << "This is Huffman decompressor." << std::endl;
 }
 
-constexpr Node::Node(const unsigned char ch, const size_t freq) noexcept
+constexpr Node::Node(const char ch, const size_t freq) noexcept
 		: ch_{ch}, freq_{freq}, left_{nullptr}, right_{nullptr} {
 	assert(freq > 0 && "zero frequency is useless for the tree");
 }
@@ -152,7 +155,7 @@ Tree::Tree(std::istream& input): root_{nullptr} {
 	// Character nodes to store frequencies greater than 0.
 	std::vector<Node*> nodes;
 	// Create character nodes with corresponding frequencies greater than 0.
-	unsigned char ch{'\0'};
+	char ch{'\0'};
 	do {
 		if (freq_counter[ch] > 0) {
 			nodes.push_back(new Node(ch, freq_counter[ch]));
@@ -184,6 +187,11 @@ constexpr Tree::~Tree() noexcept {
 		// Free allocated node.
 		delete root_;
 	}
+}
+
+std::map<char, std::string> Tree::calculate_paths() const noexcept {
+	std::map<char, std::string> paths;
+	return paths;
 }
 
 }  // namespace algorithm
