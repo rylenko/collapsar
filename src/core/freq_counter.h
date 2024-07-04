@@ -13,15 +13,24 @@ namespace core {
 // `get_total()` to get the total count of characters.
 class FreqCounter {
 	public:
+		// Storage of characters and corresponding counts.
+		using Counts = std::map<char, size_t>;
+
 		// Counts characters of the passed stream until EOF.
 		//
 		// After successfully counting, the stream must be in the EOF state: eofbit
 		// and failbit.
 		friend std::istream& operator>>(std::istream &input, FreqCounter& counter);
 
-		// Gets a count of the passed `ch`aracter.
-		size_t operator[](const char ch) noexcept {
-			return counts_[ch];
+		// Returns an iterator to the first element of the counts map.
+		inline Counts::const_iterator begin() const noexcept {
+			return counts_.begin();
+		}
+
+		// Returns an iterator to the element following last element of the counts
+		// map.
+		inline Counts::const_iterator end() const noexcept {
+			return counts_.end();
 		}
 
 		// Returns total count of characters.
@@ -33,7 +42,7 @@ class FreqCounter {
 		// Counts new passed `ch`aracter.
 		void count_(char ch) noexcept;
 
-		std::map<char, size_t> counts_;
+		Counts counts_;
 		size_t total_ = 0;
 };
 

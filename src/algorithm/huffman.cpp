@@ -4,7 +4,6 @@
 #include <cstddef>
 
 #include <algorithm>
-#include <format>
 #include <fstream>
 #include <ios>
 #include <istream>
@@ -60,7 +59,7 @@ class Tree {
 		//
 		// After successfully construction, the stream must be in the EOF state:
 		// eofbit and failbit.
-		explicit Tree(std::istream& input);
+		explicit Tree(const core::FreqCounter& freq_counter) noexcept;
 
 		// Destructs the built tree.
 		constexpr ~Tree() noexcept;
@@ -77,8 +76,12 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// require input to be ifstream.
 	validate_input_is_ifstream_(input);
 
-	// Build the tree of input data.
-	Tree tree{input};
+	// Count frequencies of characters to build a tree with optimal paths.
+	core::FreqCounter freq_counter;
+	input >> freq_counter;
+	// Build the tree using character frequencies.
+	Tree tree{freq_counter};
+
 	// Clear EOF state (eofbit and failbit) to seek to the beginning of the
 	// stream.
 	input.clear();
@@ -142,29 +145,17 @@ constexpr bool operator<(const Node& x, const Node& y) noexcept {
 	return x.freq_ > y.freq_;
 }
 
-Tree::Tree(std::istream& input): root_{nullptr} {
-	// Count frequencies of characters.
-	core::FreqCounter freq_counter;
-	try {
-		input >> freq_counter;
-	} catch (const core::FreqCounterError& e) {
-		throw core::CompressorError(
-			std::format("failed to count frequencies: {}", e.what()));
-	}
-
+Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
 	// Character nodes to store frequencies greater than 0.
 	std::vector<Node*> nodes;
 	// Create character nodes with corresponding frequencies greater than 0.
-	char ch{'\0'};
-	do {
-		if (freq_counter[ch] > 0) {
-			nodes.push_back(new Node(ch, freq_counter[ch]));
-		}
-	} while (0 != ++ch);
+	for (auto it = freq_counter.begin(); freq_counter.end() != it; ++it) {
+		nodes.push_back(new Node(it->first, it->second));
+	}
 
 	// Build a tree of nodes. The most frequent nodes have the shortest path.
 	while (nodes.size() > 1) {
-		// Sort nodes. See less operator implementation for more.
+		// Sort nodes by frequency descending.
 		std::sort(nodes.begin(), nodes.end(), core::LessPtr<Node>{});
 
 		// Group the last two elements into a grouping node.
@@ -174,7 +165,7 @@ Tree::Tree(std::istream& input): root_{nullptr} {
 		nodes.pop_back();
 		nodes.push_back(new Node{left, right});
 	}
-	// Replace current `nullptr` root with built root.
+	// Replace current `nullptr` root with built root if exists.
 	if (!nodes.empty()) {
 		root_ = nodes[0];
 	}

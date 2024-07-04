@@ -2,6 +2,8 @@
 
 #include <istream>
 
+#include "core/compressor.h"
+
 namespace core {
 
 std::istream& operator>>(std::istream& stream, FreqCounter& counter) {
@@ -12,7 +14,7 @@ std::istream& operator>>(std::istream& stream, FreqCounter& counter) {
 
 	// Validate that EOF reached.
 	if (!stream.eof()) {
-		throw FreqCounterError("frequency counter did not reach EOF");
+		throw CompressorError("frequency counter did not reach EOF");
 	}
 	return stream;
 }

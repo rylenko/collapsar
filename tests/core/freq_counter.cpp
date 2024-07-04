@@ -4,7 +4,7 @@
 
 #include "core/freq_counter.h"
 
-TEST(FreqCounter, all) {
+TEST(FreqCounter, counting_and_iterator) {
 	core::FreqCounter counter;
 
 	// Write test string to the counter.
@@ -15,14 +15,47 @@ TEST(FreqCounter, all) {
 	// Test total frequencies.
 	EXPECT_EQ(counter.get_total(), str.size());
 	// Test indexing operator.
-	EXPECT_EQ(counter[' '], 4);
-	EXPECT_EQ(counter['1'], 1);
-	EXPECT_EQ(counter['2'], 1);
-	EXPECT_EQ(counter['3'], 1);
-	EXPECT_EQ(counter['a'], 1);
-	EXPECT_EQ(counter['b'], 3);
-	EXPECT_EQ(counter['e'], 2);
-	EXPECT_EQ(counter['l'], 2);
-	EXPECT_EQ(counter['p'], 2);
-	EXPECT_EQ(counter['u'], 1);
+	auto it = counter.begin();
+
+	EXPECT_EQ(it->first, ' ');
+	EXPECT_EQ(it->second, 4);
+	++it;
+
+	EXPECT_EQ(it->first, '1');
+	EXPECT_EQ(it->second, 1);
+	++it;
+
+	EXPECT_EQ(it->first, '2');
+	EXPECT_EQ(it->second, 1);
+	++it;
+
+	EXPECT_EQ(it->first, '3');
+	EXPECT_EQ(it->second, 1);
+	++it;
+
+	EXPECT_EQ(it->first, 'a');
+	EXPECT_EQ(it->second, 1);
+	++it;
+
+	EXPECT_EQ(it->first, 'b');
+	EXPECT_EQ(it->second, 3);
+	++it;
+
+	EXPECT_EQ(it->first, 'e');
+	EXPECT_EQ(it->second, 2);
+	++it;
+
+	EXPECT_EQ(it->first, 'l');
+	EXPECT_EQ(it->second, 2);
+	++it;
+
+	EXPECT_EQ(it->first, 'p');
+	EXPECT_EQ(it->second, 2);
+	++it;
+
+	EXPECT_EQ(it->first, 'u');
+	EXPECT_EQ(it->second, 1);
+	++it;
+
+	EXPECT_EQ(it, counter.end());
 }
