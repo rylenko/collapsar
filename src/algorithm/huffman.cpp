@@ -141,7 +141,8 @@ constexpr bool operator<(const Node& x, const Node& y) noexcept {
 
 Tree::Tree(std::istream& input): root_{nullptr} {
 	// Count frequencies of characters.
-	core::FreqCounter freq_counter; try {
+	core::FreqCounter freq_counter;
+	try {
 		input >> freq_counter;
 	} catch (const core::FreqCounterError& e) {
 		throw core::CompressorError(

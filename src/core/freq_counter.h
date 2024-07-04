@@ -25,8 +25,7 @@ class FreqCounter {
 		friend std::istream& operator>>(std::istream &input, FreqCounter& counter);
 
 		// Gets a constant reference to the count of the passed `ch`aracter.
-		constexpr Counts::const_reference operator[](
-				unsigned char ch) const noexcept {
+		constexpr Counts::value_type operator[](unsigned char ch) const noexcept {
 			return counts_[ch];
 		}
 
