@@ -99,6 +99,13 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Count frequencies of characters to build a tree with optimal paths.
 	core::FreqCounter freq_counter;
 	input >> freq_counter;
+
+	// Write input length to the output.
+	output << freq_counter.get_total();
+	if (output.bad()) {
+		throw core::CompressorError("failed to write input's length to output");
+	}
+
 	// Build the tree using character frequencies.
 	Tree tree{freq_counter};
 
