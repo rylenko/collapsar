@@ -7,10 +7,10 @@
 #include <fstream>
 #include <ios>
 #include <istream>
+#include <iterator>
 #include <map>
 #include <ostream>
 #include <stdexcept>
-#include <string>
 #include <vector>
 
 #include "core/comparator.h"
@@ -18,6 +18,19 @@
 #include "core/freq_counter.h"
 
 namespace algorithm {
+
+// The direction of the path, which can be represented as an integer. Left
+// means 0 and right means 1.
+enum PathDirection {
+	Left = 0,
+	Right = 1,
+};
+
+// Path of the tree.
+using Path = std::vector<PathDirection>;
+
+// Tree path of each character.
+using Paths = std::map<char, Path>;
 
 // Huffman compression tree node to store characters with corresponsing
 // frequency or left and right nodes.
@@ -37,6 +50,13 @@ class Node {
 		// A node is less than another if its frequency is higher. That is, the most
 		// frequent node requires less weight.
 		friend constexpr bool operator<(const Node& x, const Node& y) noexcept;
+
+		// Recursively calculates character node paths using buffer and its position.
+		constexpr void calculate_paths(
+			Paths& paths, Path& buffer, size_t buffer_i) const noexcept;
+
+		// Determines that node is another nodes group.
+		constexpr bool is_group() const noexcept;
 
 	private:
 		// A character with a certain frequency or a random character if the left and
@@ -65,7 +85,7 @@ class Tree {
 		constexpr ~Tree() noexcept;
 
 		// Calculate paths. So this function calculates tree path for each character.
-		std::map<char, std::string> calculate_paths() const noexcept;
+		Paths calculate_paths() const noexcept;
 
 	private:
 		Node* root_;
@@ -128,14 +148,11 @@ constexpr Node::Node(Node* const left, Node* const right) noexcept
 }
 
 constexpr Node::~Node() noexcept {
-	// Destruct and deallocate the left node if exists.
-	if (nullptr != left_) {
+	// Destruct and deallocate branches if current node is grouping node.
+	if (is_group()) {
 		left_->~Node();
 		delete left_;
-	}
 
-	// Destruct and deallocate the right node if exists.
-	if (nullptr != right_) {
 		left_->~Node();
 		delete left_;
 	}
@@ -143,6 +160,29 @@ constexpr Node::~Node() noexcept {
 
 constexpr bool operator<(const Node& x, const Node& y) noexcept {
 	return x.freq_ > y.freq_;
+}
+
+constexpr void Node::calculate_paths(
+		Paths& paths, Path& buffer, size_t buffer_i) const noexcept {
+	if (is_group()) {
+		// Continue recursion through left branch from current buffer position.
+		buffer[buffer_i] = PathDirection::Left;
+		left_->calculate_paths(paths, buffer, buffer_i + 1);
+
+		// Continue recursion through left branch from current buffer position.
+		buffer[buffer_i] = PathDirection::Right;
+		right_->calculate_paths(paths, buffer, buffer_i + 1);
+	} else {
+		// Copy current buffer to the paths map.
+		auto inserter = std::back_inserter(paths[ch_]);
+		std::ranges::copy_n(buffer.begin(), buffer_i + 1, inserter);
+	}
+}
+
+constexpr bool Node::is_group() const noexcept {
+	// There is no need to check right node against `nullptr` because a grouping
+	// node has either 0 branches or both.
+	return nullptr != left_;
 }
 
 Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
@@ -180,8 +220,11 @@ constexpr Tree::~Tree() noexcept {
 	}
 }
 
-std::map<char, std::string> Tree::calculate_paths() const noexcept {
-	std::map<char, std::string> paths;
+Paths Tree::calculate_paths() const noexcept {
+	Paths paths;
+	Path buffer;
+	// Calculate paths recursively using buffer from the root node.
+	root_->calculate_paths(paths, buffer, 0);
 	return paths;
 }
 
