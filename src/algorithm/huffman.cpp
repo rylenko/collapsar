@@ -197,6 +197,8 @@ constexpr void Node::calculate_paths(
 // Dumps current node to the passed buffer starting from passed bit index.
 constexpr void Node::dump(
 		char* const buffer, size_t& bit_index) const noexcept {
+	(void)buffer;
+	(void)bit_index;
 	if (is_group()) {
 	} else {
 
