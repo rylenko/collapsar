@@ -20,7 +20,7 @@ class FreqCounter {
 		//
 		// After successfully counting, the stream must be in the EOF state: eofbit
 		// and failbit.
-		friend std::istream& operator>>(std::istream &input, FreqCounter& counter);
+		friend std::istream& operator>>(std::istream& input, FreqCounter& counter);
 
 		// Returns an iterator to the first element of the counts map.
 		inline Counts::const_iterator begin() const noexcept {

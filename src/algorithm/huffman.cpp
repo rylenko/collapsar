@@ -53,7 +53,10 @@ class Node {
 
 		// Recursively calculates character node paths using buffer and its position.
 		constexpr void calculate_paths(
-			Paths& paths, Path& buffer, size_t buffer_i) const noexcept;
+			Paths& paths, Path& buffer, size_t buffer_index) const noexcept;
+
+		// Dumps current node to the passed buffer starting from passed bit index.
+		constexpr void dump(char* buffer, size_t& bit_index) const noexcept;
 
 		// Determines that node is another nodes group.
 		constexpr bool is_group() const noexcept;
@@ -87,6 +90,9 @@ class Tree {
 		// Calculate paths. So this function calculates tree path for each character.
 		Paths calculate_paths() const noexcept;
 
+		// Dumps the tree to the passed buffer starting from passed bit index.
+		constexpr void dump(char* buffer, size_t& bit_index) const noexcept;
+
 	private:
 		Node* root_;
 };
@@ -101,6 +107,8 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	input >> freq_counter;
 
 	// Write input length to the output.
+	//
+	// TODO: do algorithm really need this?
 	output << freq_counter.get_total();
 	if (output.bad()) {
 		throw core::CompressorError("failed to write input's length to output");
@@ -170,19 +178,28 @@ constexpr bool operator<(const Node& x, const Node& y) noexcept {
 }
 
 constexpr void Node::calculate_paths(
-		Paths& paths, Path& buffer, size_t buffer_i) const noexcept {
+		Paths& paths, Path& buffer, size_t buffer_index) const noexcept {
 	if (is_group()) {
 		// Continue recursion through left branch from current buffer position.
-		buffer[buffer_i] = PathDirection::Left;
-		left_->calculate_paths(paths, buffer, buffer_i + 1);
+		buffer[buffer_index] = PathDirection::Left;
+		left_->calculate_paths(paths, buffer, buffer_index + 1);
 
 		// Continue recursion through left branch from current buffer position.
-		buffer[buffer_i] = PathDirection::Right;
-		right_->calculate_paths(paths, buffer, buffer_i + 1);
+		buffer[buffer_index] = PathDirection::Right;
+		right_->calculate_paths(paths, buffer, buffer_index + 1);
 	} else {
 		// Copy current buffer to the paths map.
 		auto inserter = std::back_inserter(paths[ch_]);
-		std::ranges::copy_n(buffer.begin(), buffer_i + 1, inserter);
+		std::ranges::copy_n(buffer.begin(), buffer_index + 1, inserter);
+	}
+}
+
+// Dumps current node to the passed buffer starting from passed bit index.
+constexpr void Node::dump(
+		char* const buffer, size_t& bit_index) const noexcept {
+	if (is_group()) {
+	} else {
+
 	}
 }
 
@@ -227,12 +244,19 @@ constexpr Tree::~Tree() noexcept {
 	}
 }
 
+
 Paths Tree::calculate_paths() const noexcept {
 	Paths paths;
 	Path buffer;
 	// Calculate paths recursively using buffer from the root node.
 	root_->calculate_paths(paths, buffer, 0);
 	return paths;
+}
+
+// Dumps the tree to the passed buffer starting from passed bit index.
+constexpr void Tree::dump(
+		char* const buffer, size_t& bit_index) const noexcept {
+	root_->dump(buffer, bit_index);
 }
 
 }  // namespace algorithm
