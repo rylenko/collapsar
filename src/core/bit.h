@@ -17,4 +17,11 @@ constexpr void bit_clear(char* const buffer, const size_t index) noexcept {
 	buffer[index / CHAR_BIT] &= ~(1 << left_shift);
 }
 
+// Writes character to the buffer starting from passed index.
+constexpr void bit_write(
+		char* const buffer, const size_t index, const char ch) noexcept {
+	buffer[index / CHAR_BIT] |= ch >> index % CHAR_BIT;
+	buffer[index / CHAR_BIT + 1] |= ch << (CHAR_BIT - index % CHAR_BIT);
+}
+
 }  // namespace core

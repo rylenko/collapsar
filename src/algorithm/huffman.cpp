@@ -1,6 +1,7 @@
 #include "algorithm/huffman.h"
 
 #include <cassert>
+#include <climits>
 #include <cstddef>
 
 #include <algorithm>
@@ -13,11 +14,14 @@
 #include <stdexcept>
 #include <vector>
 
+#include "core/bit.h"
 #include "core/comparator.h"
 #include "core/compressor.h"
 #include "core/freq_counter.h"
 
 namespace algorithm {
+
+inline constexpr size_t BUFFER_SIZE{4096};
 
 // The direction of the path, which can be represented as an integer. Left
 // means 0 and right means 1.
@@ -102,21 +106,13 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// require input to be ifstream.
 	validate_input_is_ifstream_(input);
 
+	// Create the buffer with zeros to write to output.
+	char buffer[BUFFER_SIZE]{};
+	size_t buffer_bit_index{0};
+
 	// Count frequencies of characters to build a tree with optimal paths.
 	core::FreqCounter freq_counter;
 	input >> freq_counter;
-
-	// Write input length to the output.
-	//
-	// TODO: do algorithm really need this?
-	output << freq_counter.get_total();
-	if (output.bad()) {
-		throw core::CompressorError("failed to write input's length to output");
-	}
-
-	// Build the tree using character frequencies.
-	Tree tree{freq_counter};
-
 	// Clear EOF state (eofbit and failbit) to seek to the beginning of the
 	// stream.
 	input.clear();
@@ -126,6 +122,19 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	if (!input.good()) {
 		throw core::CompressorError("failed to seek to the beginning of the input");
 	}
+	// Write readed input length to the buffer.
+	const size_t input_length = freq_counter.get_total();
+	std::copy_n(
+		reinterpret_cast<const char*>(&input_length), sizeof(input_length), buffer);
+	buffer_bit_index += sizeof(input_length) * CHAR_BIT;
+
+	// Build the tree using character frequencies.
+	Tree tree{freq_counter};
+	// Dump the tree to the buffer.
+	tree.dump(buffer, buffer_bit_index);
+
+	// Get each character tree paths.
+	Paths paths = tree.calculate_paths();
 
 	output << "This is Huffman decompressor." << std::endl;
 }
@@ -195,13 +204,26 @@ constexpr void Node::calculate_paths(
 }
 
 // Dumps current node to the passed buffer starting from passed bit index.
+//
+// Make sure that buffer is big enough to store node's dump.
 constexpr void Node::dump(
 		char* const buffer, size_t& bit_index) const noexcept {
-	(void)buffer;
-	(void)bit_index;
 	if (is_group()) {
-	} else {
+		// Set the bit, which means that we have a grouping node.
+		core::bit_set(buffer, bit_index);
+		++bit_index;
 
+		// Dump left and right branches.
+		left_->dump(buffer, bit_index);
+		right_->dump(buffer, bit_index);
+	} else {
+		// Clear the bit, which means that we have a character node.
+		core::bit_clear(buffer, bit_index);
+		++bit_index;
+
+		// Write character to the buffer.
+		core::bit_write(buffer, bit_index, ch_);
+		bit_index += CHAR_BIT;
 	}
 }
 
@@ -256,6 +278,8 @@ Paths Tree::calculate_paths() const noexcept {
 }
 
 // Dumps the tree to the passed buffer starting from passed bit index.
+//
+// Make sure that buffer is big enough to store node's dump.
 constexpr void Tree::dump(
 		char* const buffer, size_t& bit_index) const noexcept {
 	root_->dump(buffer, bit_index);
