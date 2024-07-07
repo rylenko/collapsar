@@ -4,20 +4,7 @@
 
 #include "core/bit.h"
 
-TEST(bit, set_single) {
-	char ch{0};
-
-	core::bit_set(&ch, CHAR_BIT - 1);
-	EXPECT_EQ(ch, 1);
-
-	core::bit_set(&ch, CHAR_BIT - 3);
-	EXPECT_EQ(ch, 5);
-
-	core::bit_set(&ch, CHAR_BIT - 4);
-	EXPECT_EQ(ch, 13);
-}
-
-TEST(bit, set_multiple) {
+TEST(bit, set) {
 	char buf[3]{0, 0, 0};
 
 	core::bit_set(buf, CHAR_BIT * 3 - 1);
@@ -36,20 +23,7 @@ TEST(bit, set_multiple) {
 	EXPECT_EQ(buf[2], 1);
 }
 
-TEST(bit, clear_single) {
-	char ch{13};
-
-	core::bit_clear(&ch, CHAR_BIT - 4);
-	EXPECT_EQ(ch, 5);
-
-	core::bit_clear(&ch, CHAR_BIT - 3);
-	EXPECT_EQ(ch, 1);
-
-	core::bit_clear(&ch, CHAR_BIT - 1);
-	EXPECT_EQ(ch, 0);
-}
-
-TEST(bit, clear_multiple) {
+TEST(bit, clear) {
 	char buf[3]{0, 36, 1};
 
 	core::bit_clear(buf, CHAR_BIT * 2 - 6);
@@ -66,4 +40,19 @@ TEST(bit, clear_multiple) {
 	EXPECT_EQ(buf[0], 0);
 	EXPECT_EQ(buf[1], 0);
 	EXPECT_EQ(buf[2], 0);
+}
+
+TEST(bit, write) {
+	char buf[3]{0, 0, 0};
+
+	core::bit_write(buf, 2, CHAR_MIN);
+	EXPECT_EQ(buf[0], CHAR_MIN >> 2);
+	EXPECT_EQ(buf[1], (CHAR_MIN & 0b11) << (CHAR_BIT - 2));
+	EXPECT_EQ(buf[2], 0);
+
+	core::bit_write(buf, CHAR_BIT + 1, CHAR_MAX);
+	EXPECT_EQ(buf[0], CHAR_MIN >> 2);
+	EXPECT_EQ(buf[1], (CHAR_MIN & 0b10) << (CHAR_BIT - 2) | CHAR_MAX >> 1);
+	// Static cast need here to make testing library happy.
+	EXPECT_EQ(buf[2], static_cast<char>((CHAR_MAX & 0b1) << (CHAR_BIT - 1)));
 }
