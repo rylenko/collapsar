@@ -97,14 +97,19 @@ void HuffmanCompressor::compress_(
 				// Dump direction's bit.
 				huffman_tree_direction_dump(direction, output_buf, output_buf_bit_index);
 
-				// Write the output buffer if full.
-				if (sizeof(output_buf) == output_buf_bit_index / CHAR_BIT) {
-					output.write(output_buf, sizeof(output_buf));
-					if (output.bad()) {
-						throw core::CompressorError(
-							"failed to write the part of compressed content");
-					}
+				// Do not drain the output buffer if it is not full.
+				if (sizeof(output_buf) < output_buf_bit_index / CHAR_BIT) {
+					continue;
 				}
+
+				// Drain the output buffer to the stream.
+				output.write(output_buf, sizeof(output_buf));
+				if (output.bad()) {
+					throw core::CompressorError(
+						"failed to write the part of compressed content");
+				}
+				std::fill(std::begin(output_buf), std::end(output_buf), 0);
+				output_buf_bit_index = 0;
 			}
 		}
 	}
@@ -123,7 +128,6 @@ void HuffmanCompressor::compress_(
 				"failed to write the last part of compressed content");
 		}
 	}
-
 	// Try to flush the output.
 	output.flush();
 	if (output.bad()) {
