@@ -99,7 +99,7 @@ void HuffmanCompressor::compress_(
 				huffman_tree_direction_dump(direction, output_buf, output_buf_bit_index);
 
 				// Do not drain the output buffer if it is not full.
-				if (sizeof(output_buf) < output_buf_bit_index / CHAR_BIT) {
+				if (output_buf_bit_index / CHAR_BIT < sizeof(output_buf)) {
 					continue;
 				}
 
