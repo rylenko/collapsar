@@ -15,9 +15,9 @@ namespace algorithm {
 
 // The direction of the path, which can be represented as an integer. Left
 // means 0 and right means 1.
-enum HuffmanTreeDirection {
-	Left = 0,
-	Right = 1,
+enum class HuffmanTreeDirection {
+	Left,
+	Right,
 };
 
 // Path of the tree.
@@ -102,9 +102,7 @@ class HuffmanCompressor: public core::Compressor {
 	private:
 		// Compresses input's content to output using passed tree.
 		static void compress_(
-			std::istream& input,
-			const HuffmanTree& tree,
-			std::ostream& output) noexcept;
+			std::istream& input, const HuffmanTree& tree, std::ostream& output);
 
 		// Validates that `input` stream is `std::ifstream`. Otherwise throws an
 		// exception.

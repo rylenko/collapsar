@@ -22,7 +22,8 @@
 
 namespace algorithm {
 
-inline constexpr size_t BUF_SIZE{4096};
+inline constexpr size_t INPUT_BUF_SIZE{8192};
+inline constexpr size_t OUTPUT_BUF_SIZE{8192};
 
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Huffman compression requires double read. So to seek later we need to
@@ -41,27 +42,83 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	}
 	// Write readed input size to the output.
 	output << freq_counter.get_total();
+	if (output.bad()) {
+		throw core::CompressorError("failed to write input's size to the output");
+	}
 
 	// Build the tree using character frequencies.
 	HuffmanTree tree{freq_counter};
+	// Compress input's content to output through built tree.
 	compress_(input, tree, output);
 }
 
 void HuffmanCompressor::compress_(
-		std::istream& input,
-		const HuffmanTree& tree,
-		std::ostream& output) noexcept {
-	(void)input;
-	char buf[BUF_SIZE]{};
-	size_t buf_bit_index{0};
+		std::istream& input, const HuffmanTree& tree, std::ostream& output) {
+	// Create buffer to read input content.
+	char input_buf[INPUT_BUF_SIZE]{};
+
+	// Create buffer to conveniently work with bits.
+	char output_buf[OUTPUT_BUF_SIZE]{};
+	size_t output_buf_bit_index{0};
 
 	// Dump the tree to the buffer.
-	tree.dump(buf, buf_bit_index);
+	tree.dump(output_buf, output_buf_bit_index);
 
 	// Get each character tree paths.
 	HuffmanTreePaths paths{tree.calculate_paths()};
 
-	output << "This is Huffman decompressor." << std::endl;
+	// Process input's content.
+	while (input.read(input_buf, sizeof(input_buf))) {
+		// Compress each readed character.
+		for (auto char_index{0}; char_index < input.gcount(); ++char_index) {
+			// Get character's tree path.
+			const HuffmanTreePath& path{paths[input_buf[char_index]]};
+
+			// Write path bits to the output buffer.
+			for (HuffmanTreeDirection direction : path) {
+				// Choose bit 0 or bit 1 and write it.
+				switch (direction) {
+				case HuffmanTreeDirection::Left:
+					core::bit_clear(output_buf, output_buf_bit_index);
+					break;
+				case HuffmanTreeDirection::Right:
+					core::bit_set(output_buf, output_buf_bit_index);
+					break;
+				}
+				++output_buf_bit_index;
+
+				// Write the output buffer if full.
+				if (sizeof(output_buf) == output_buf_bit_index / CHAR_BIT) {
+					output.write(output_buf, sizeof(output_buf));
+					if (output.bad()) {
+						throw core::CompressorError(
+							"failed to write the part of compressed content");
+					}
+				}
+			}
+		}
+	}
+
+	// Throw an error if failbit set without eofbit.
+	if (!input.eof()) {
+		throw core::CompressorError("failed to read the input until EOF");
+	}
+
+	// Write the leftover content of the output buffer.
+	if (output_buf_bit_index > 0) {
+		const size_t tail = output_buf_bit_index % CHAR_BIT > 0 ? 1 : 0;
+		output.write(output_buf, output_buf_bit_index / CHAR_BIT + tail);
+		if (output.bad()) {
+			throw core::CompressorError(
+				"failed to write the last part of compressed content");
+		}
+	}
+
+	// Try to flush the output.
+	output.flush();
+	if (output.bad()) {
+		throw core::CompressorError("failed to flush the output.");
+	}
 }
 
 constexpr void HuffmanCompressor::validate_input_is_ifstream_(
