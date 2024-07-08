@@ -70,6 +70,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	compress_(input, tree, output);
 }
 
+// TODO: Make more readable, split into small functions.
 void HuffmanCompressor::compress_(
 		std::istream& input, const HuffmanTree& tree, std::ostream& output) {
 	// Create buffer to read input content.
