@@ -25,6 +25,24 @@ namespace algorithm {
 inline constexpr size_t INPUT_BUF_SIZE{8192};
 inline constexpr size_t OUTPUT_BUF_SIZE{8192};
 
+// Dumps the tree direction to the passed buffer starting from passed bit
+// index.
+constexpr void huffman_tree_direction_dump(
+		HuffmanTreeDirection direction,
+		char* const buf,
+		size_t& bit_index) noexcept {
+	// Choose bit 0 or bit 1 and write it.
+	switch (direction) {
+	case HuffmanTreeDirection::Left:
+		core::bit_clear(buf, bit_index);
+		break;
+	case HuffmanTreeDirection::Right:
+		core::bit_set(buf, bit_index);
+		break;
+	}
+	++bit_index;
+}
+
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Huffman compression requires double read. So to seek later we need to
 	// require input to be ifstream.
@@ -76,16 +94,8 @@ void HuffmanCompressor::compress_(
 
 			// Write path bits to the output buffer.
 			for (HuffmanTreeDirection direction : path) {
-				// Choose bit 0 or bit 1 and write it.
-				switch (direction) {
-				case HuffmanTreeDirection::Left:
-					core::bit_clear(output_buf, output_buf_bit_index);
-					break;
-				case HuffmanTreeDirection::Right:
-					core::bit_set(output_buf, output_buf_bit_index);
-					break;
-				}
-				++output_buf_bit_index;
+				// Dump direction's bit.
+				huffman_tree_direction_dump(direction, output_buf, output_buf_bit_index);
 
 				// Write the output buffer if full.
 				if (sizeof(output_buf) == output_buf_bit_index / CHAR_BIT) {
