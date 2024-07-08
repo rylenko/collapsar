@@ -21,7 +21,7 @@
 
 namespace algorithm {
 
-inline constexpr size_t BUFFER_SIZE{4096};
+inline constexpr size_t BUF_SIZE{4096};
 
 // The direction of the path, which can be represented as an integer. Left
 // means 0 and right means 1.
@@ -57,10 +57,10 @@ class Node {
 
 		// Recursively calculates character node paths using buffer and its position.
 		constexpr void calculate_paths(
-			Paths& paths, Path& buffer, size_t buffer_index) const noexcept;
+			Paths& paths, Path& buf, size_t buf_index) const noexcept;
 
 		// Dumps current node to the passed buffer starting from passed bit index.
-		constexpr void dump(char* buffer, size_t& bit_index) const noexcept;
+		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
 
 		// Determines that node is another nodes group.
 		constexpr bool is_group() const noexcept;
@@ -95,7 +95,7 @@ class Tree {
 		Paths calculate_paths() const noexcept;
 
 		// Dumps the tree to the passed buffer starting from passed bit index.
-		constexpr void dump(char* buffer, size_t& bit_index) const noexcept;
+		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
 
 	private:
 		Node* root_;
@@ -107,31 +107,29 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	validate_input_is_ifstream_(input);
 
 	// Create the buffer with zeros to write to output.
-	char buffer[BUFFER_SIZE]{};
-	size_t buffer_bit_index{0};
+	char output_buf[BUF_SIZE]{};
+	size_t output_buf_bit_index{0};
 
 	// Count frequencies of characters to build a tree with optimal paths.
 	core::FreqCounter freq_counter;
 	input >> freq_counter;
-	// Clear EOF state (eofbit and failbit) to seek to the beginning of the
-	// stream.
+	// Clear eofbit and failbit to seek to the beginning of the stream.
 	input.clear();
-	// Seek to the beginning of the input to give the ability to read content
-	// again later.
+	// Seek to the beginning of the input to apply tree paths.
 	input.seekg(0, std::ios::beg);
 	if (!input.good()) {
 		throw core::CompressorError("failed to seek to the beginning of the input");
 	}
-	// Write readed input length to the buffer.
-	const size_t input_length = freq_counter.get_total();
+	// Write readed input size to the buffer.
+	const size_t input_size = freq_counter.get_total();
 	std::copy_n(
-		reinterpret_cast<const char*>(&input_length), sizeof(input_length), buffer);
-	buffer_bit_index += sizeof(input_length) * CHAR_BIT;
+		reinterpret_cast<const char*>(&input_size), sizeof(input_size), output_buf);
+	output_buf_bit_index += sizeof(input_size) * CHAR_BIT;
 
 	// Build the tree using character frequencies.
 	Tree tree{freq_counter};
 	// Dump the tree to the buffer.
-	tree.dump(buffer, buffer_bit_index);
+	tree.dump(output_buf, output_buf_bit_index);
 
 	// Get each character tree paths.
 	Paths paths = tree.calculate_paths();
@@ -187,42 +185,41 @@ constexpr bool operator<(const Node& x, const Node& y) noexcept {
 }
 
 constexpr void Node::calculate_paths(
-		Paths& paths, Path& buffer, size_t buffer_index) const noexcept {
+		Paths& paths, Path& buf, size_t buf_index) const noexcept {
 	if (is_group()) {
 		// Continue recursion through left branch from current buffer position.
-		buffer[buffer_index] = PathDirection::Left;
-		left_->calculate_paths(paths, buffer, buffer_index + 1);
+		buf[buf_index] = PathDirection::Left;
+		left_->calculate_paths(paths, buf, buf_index + 1);
 
 		// Continue recursion through left branch from current buffer position.
-		buffer[buffer_index] = PathDirection::Right;
-		right_->calculate_paths(paths, buffer, buffer_index + 1);
+		buf[buf_index] = PathDirection::Right;
+		right_->calculate_paths(paths, buf, buf_index + 1);
 	} else {
 		// Copy current buffer to the paths map.
 		auto inserter = std::back_inserter(paths[ch_]);
-		std::ranges::copy_n(buffer.begin(), buffer_index + 1, inserter);
+		std::ranges::copy_n(buf.begin(), buf_index + 1, inserter);
 	}
 }
 
 // Dumps current node to the passed buffer starting from passed bit index.
 //
 // Make sure that buffer is big enough to store node's dump.
-constexpr void Node::dump(
-		char* const buffer, size_t& bit_index) const noexcept {
+constexpr void Node::dump(char* const buf, size_t& bit_index) const noexcept {
 	if (is_group()) {
 		// Set the bit, which means that we have a grouping node.
-		core::bit_set(buffer, bit_index);
+		core::bit_set(buf, bit_index);
 		++bit_index;
 
 		// Dump left and right branches.
-		left_->dump(buffer, bit_index);
-		right_->dump(buffer, bit_index);
+		left_->dump(buf, bit_index);
+		right_->dump(buf, bit_index);
 	} else {
 		// Clear the bit, which means that we have a character node.
-		core::bit_clear(buffer, bit_index);
+		core::bit_clear(buf, bit_index);
 		++bit_index;
 
 		// Write character to the buffer.
-		core::bit_write(buffer, bit_index, ch_);
+		core::bit_write(buf, bit_index, ch_);
 		bit_index += CHAR_BIT;
 	}
 }
@@ -271,18 +268,17 @@ constexpr Tree::~Tree() noexcept {
 
 Paths Tree::calculate_paths() const noexcept {
 	Paths paths;
-	Path buffer;
+	Path buf;
 	// Calculate paths recursively using buffer from the root node.
-	root_->calculate_paths(paths, buffer, 0);
+	root_->calculate_paths(paths, buf, 0);
 	return paths;
 }
 
 // Dumps the tree to the passed buffer starting from passed bit index.
 //
 // Make sure that buffer is big enough to store node's dump.
-constexpr void Tree::dump(
-		char* const buffer, size_t& bit_index) const noexcept {
-	root_->dump(buffer, bit_index);
+constexpr void Tree::dump(char* const buf, size_t& bit_index) const noexcept {
+	root_->dump(buf, bit_index);
 }
 
 }  // namespace algorithm
