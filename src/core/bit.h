@@ -18,6 +18,8 @@ constexpr void bit_clear(char* const buffer, const size_t index) noexcept {
 }
 
 // Writes character to the buffer starting from passed index.
+//
+// Make sure the buffer contains at least `CHAR_BIT` bits after index.
 constexpr void bit_write(
 		char* const buffer, const size_t index, const char ch) noexcept {
 	buffer[index / CHAR_BIT] |= ch >> index % CHAR_BIT;
