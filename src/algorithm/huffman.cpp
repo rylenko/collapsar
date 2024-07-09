@@ -190,7 +190,7 @@ constexpr bool operator<(
 constexpr void HuffmanTreeNode::calculate_paths(
 		HuffmanTreePaths& paths,
 		HuffmanTreePath& buf,
-		size_t buf_index) const noexcept {
+		const size_t buf_index) const noexcept {
 	if (is_group()) {
 		// Continue recursion through left branch from current buffer position.
 		buf[buf_index] = HuffmanTreeDirection::Left;
@@ -201,8 +201,8 @@ constexpr void HuffmanTreeNode::calculate_paths(
 		right_->calculate_paths(paths, buf, buf_index + 1);
 	} else {
 		// Copy current buffer to the paths map.
-		auto inserter{std::back_inserter(paths[ch_])};
-		std::ranges::copy_n(buf.begin(), buf_index + 1, inserter);
+		std::ranges::copy_n(
+			buf.begin(), buf_index + 1, std::back_inserter(paths[ch_]));
 	}
 }
 
