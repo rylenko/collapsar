@@ -5,7 +5,6 @@
 #include <array>
 #include <memory>
 #include <stdexcept>
-#include <string>
 #include <string_view>
 
 #include "compressor.h"
@@ -17,7 +16,7 @@ template <std::size_t N>
 class DecompressorFactory {
 	public:
 		// Array of names of available decompressors.
-		using Names = std::array<std::string, N>;
+		using Names = std::array<std::string_view, N>;
 
 		virtual ~DecompressorFactory() = default;
 

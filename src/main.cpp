@@ -3,7 +3,7 @@
 #include <QApplication>
 
 #include <iostream>
-#include <string>
+#include <string_view>
 #include <memory>
 
 #include "algorithm/compressor_factory.h"
@@ -18,34 +18,34 @@ int main(int argc, char** argv) {
 	auto compressor_factory = new algorithm::CompressorFactory{};
 	auto decompressor_factory = new algorithm::DecompressorFactory{};
 
-	std::unique_ptr<core::Compressor> compressor =
-		compressor_factory->create("huffman");
-	std::unique_ptr<core::Decompressor> decompressor =
-		decompressor_factory->create("huffman");
+	// std::unique_ptr<core::Compressor> compressor =
+		// compressor_factory->create("huffman");
+	// std::unique_ptr<core::Decompressor> decompressor =
+		// decompressor_factory->create("huffman");
 
-	compressor->compress(std::cin, std::cout);
-	decompressor->decompress(std::cin, std::cout);
+	// compressor->compress(std::cin, std::cout);
+	// decompressor->decompress(std::cin, std::cout);
 
-	try {
-		compressor = compressor_factory->create("invalid-compressor");
-	} catch (const core::CompressorFactoryError& error) {
-		std::cout << "Failed to create compressor: " << error.what() << "."
-			<< std::endl;
-	}
-	try {
-		decompressor = decompressor_factory->create("invalid-decompressor");
-	} catch (const core::DecompressorFactoryError& error) {
-		std::cout << "Failed to create decompressor: " << error.what() << "."
-			<< std::endl;
-	}
+	// try {
+		// compressor = compressor_factory->create("invalid-compressor");
+	// } catch (const core::CompressorFactoryError& error) {
+		// std::cout << "Failed to create compressor: " << error.what() << "."
+			// << std::endl;
+	// }
+	// try {
+		// decompressor = decompressor_factory->create("invalid-decompressor");
+	// } catch (const core::DecompressorFactoryError& error) {
+		// std::cout << "Failed to create decompressor: " << error.what() << "."
+			// << std::endl;
+	// }
 
 	std::cout << std::endl << "Compressors:" << std::endl;
-	for (const std::string& name : compressor_factory->get_names()) {
+	for (decltype(auto) name : compressor_factory->get_names()) {
 		std::cout << name << std::endl;
 	}
 
 	std::cout << std::endl << "Decompressors:" << std::endl;
-	for (const std::string& name : decompressor_factory->get_names()) {
+	for (decltype(auto) name : decompressor_factory->get_names()) {
 		std::cout << name << std::endl;
 	}
 
