@@ -9,7 +9,7 @@ TEST(FreqCounter, CountingAndIterator) {
 
 	// Write test string to the counter.
 	std::string str("apple bubble 123  ");
-	std::stringstream stream(str);
+	std::istringstream stream(str);
 	stream >> counter;
 
 	// Test total frequencies.
