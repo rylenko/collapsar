@@ -7,7 +7,7 @@
 #include "core/compressor.h"
 #include "core/compressor_factory.h"
 
-TEST(CompressorFactory, create) {
+TEST(CompressorFactory, Creation) {
 	// Create the factory.
 	std::unique_ptr<core::CompressorFactory<1>> factory =
 		std::make_unique<algorithm::CompressorFactory>();

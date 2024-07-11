@@ -4,7 +4,7 @@
 
 #include "core/bit.h"
 
-TEST(bit, set) {
+TEST(Bit, Set) {
 	char buf[3]{0, 0, 0};
 
 	core::bit_set(buf, CHAR_BIT * 3 - 1);
@@ -23,7 +23,7 @@ TEST(bit, set) {
 	EXPECT_EQ(buf[2], 1);
 }
 
-TEST(bit, clear) {
+TEST(Bit, Clear) {
 	char buf[3]{0, 36, 1};
 
 	core::bit_clear(buf, CHAR_BIT * 2 - 6);
@@ -42,7 +42,7 @@ TEST(bit, clear) {
 	EXPECT_EQ(buf[2], 0);
 }
 
-TEST(bit, write) {
+TEST(Bit, Write) {
 	char buf[3]{0, 0, 0};
 
 	core::bit_write(buf, 2, CHAR_MIN);

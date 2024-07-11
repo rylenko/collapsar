@@ -7,7 +7,7 @@
 #include "core/decompressor.h"
 #include "core/decompressor_factory.h"
 
-TEST(DecompressorFactory, create) {
+TEST(DecompressorFactory, Creation) {
 	// Create the factory.
 	std::unique_ptr<core::DecompressorFactory<1>> factory =
 		std::make_unique<algorithm::DecompressorFactory>();

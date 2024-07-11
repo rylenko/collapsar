@@ -4,7 +4,7 @@
 
 #include "core/freq_counter.h"
 
-TEST(FreqCounter, counting_and_iterator) {
+TEST(FreqCounter, CountingAndIterator) {
 	core::FreqCounter counter;
 
 	// Write test string to the counter.
