@@ -14,7 +14,8 @@ TEST(FreqCounter, CountingAndIterator) {
 
 	// Test total frequencies.
 	EXPECT_EQ(counter.get_total(), str.size());
-	// Test indexing operator.
+
+	// Test iterator step by step.
 	auto it = counter.begin();
 
 	EXPECT_EQ(it->first, ' ');

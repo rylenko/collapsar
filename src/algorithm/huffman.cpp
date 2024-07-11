@@ -241,8 +241,8 @@ HuffmanTree::HuffmanTree(
 	// Character nodes to store frequencies greater than 0.
 	std::vector<HuffmanTreeNode*> nodes;
 	// Create character nodes with corresponding frequencies greater than 0.
-	for (auto it{freq_counter.begin()}; freq_counter.end() != it; ++it) {
-		nodes.push_back(new HuffmanTreeNode(it->first, it->second));
+	for (const auto& [ch, count] : freq_counter) {
+		nodes.push_back(new HuffmanTreeNode(ch, count));
 	}
 
 	// Build a tree of nodes. The most frequent nodes have the shortest path.
