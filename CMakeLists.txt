@@ -53,5 +53,6 @@ add_executable(test
 	tests/core/freq_counter.cpp
 	tests/algorithm/compressor_factory.cpp
 	tests/algorithm/decompressor_factory.cpp
+	tests/algorithm/huffman.cpp
 )
 target_link_libraries(test gtest_main)

@@ -103,10 +103,6 @@ class HuffmanCompressor: public core::Compressor {
 		// Compresses input's content to output using passed tree.
 		static void compress_(
 			std::istream& input, const HuffmanTree& tree, std::ostream& output);
-
-		// Validates that `input` stream is `std::ifstream`. Otherwise throws an
-		// exception.
-		static constexpr void validate_input_is_ifstream_(const std::istream& input);
 };
 
 class HuffmanDecompressor: public core::Decompressor {

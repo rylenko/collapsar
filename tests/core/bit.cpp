@@ -1,27 +1,36 @@
 #include <climits>
+#include <cstddef>
 
 #include <gtest/gtest.h>
 
 #include "core/bit.h"
 
-TEST(Bit, Set) {
-	char buf[3]{0, 0, 0};
+TEST(Bit, Get) {
+	char buf[3]{0, 36, 1};
 
-	core::bit_set(buf, CHAR_BIT * 3 - 1);
-	EXPECT_EQ(buf[0], 0);
-	EXPECT_EQ(buf[1], 0);
-	EXPECT_EQ(buf[2], 1);
+	// Test first byte.
+	for (size_t index{0}; index < CHAR_BIT; ++index) {
+		EXPECT_EQ(core::bit_get(buf, index), 0b0);
+	}
 
-	core::bit_set(buf, CHAR_BIT * 2 - 3);
-	EXPECT_EQ(buf[0], 0);
-	EXPECT_EQ(buf[1], 4);
-	EXPECT_EQ(buf[2], 1);
+	// Test second byte.
+	for (size_t index{CHAR_BIT}; index < CHAR_BIT * 2 - 6; ++index) {
+		EXPECT_EQ(core::bit_get(buf, index), 0b0);
+	}
+	EXPECT_EQ(core::bit_get(buf, CHAR_BIT * 2 - 6), 0b1);
+	EXPECT_EQ(core::bit_get(buf, CHAR_BIT * 2 - 5), 0b0);
+	EXPECT_EQ(core::bit_get(buf, CHAR_BIT * 2 - 4), 0b0);
+	EXPECT_EQ(core::bit_get(buf, CHAR_BIT * 2 - 3), 0b1);
+	EXPECT_EQ(core::bit_get(buf, CHAR_BIT * 2 - 2), 0b0);
+	EXPECT_EQ(core::bit_get(buf, CHAR_BIT * 2 - 1), 0b0);
 
-	core::bit_set(buf, CHAR_BIT * 2 - 6);
-	EXPECT_EQ(buf[0], 0);
-	EXPECT_EQ(buf[1], 36);
-	EXPECT_EQ(buf[2], 1);
+	// Test third byte.
+	for (size_t index{CHAR_BIT * 2}; index < CHAR_BIT * 3 - 1; ++index) {
+		EXPECT_EQ(core::bit_get(buf, index), 0b0);
+	}
+	EXPECT_EQ(core::bit_get(buf, CHAR_BIT * 3 - 1), 0b1);
 }
+
 
 TEST(Bit, Clear) {
 	char buf[3]{0, 36, 1};
@@ -40,6 +49,25 @@ TEST(Bit, Clear) {
 	EXPECT_EQ(buf[0], 0);
 	EXPECT_EQ(buf[1], 0);
 	EXPECT_EQ(buf[2], 0);
+}
+
+TEST(Bit, Set) {
+	char buf[3]{0, 0, 0};
+
+	core::bit_set(buf, CHAR_BIT * 3 - 1);
+	EXPECT_EQ(buf[0], 0);
+	EXPECT_EQ(buf[1], 0);
+	EXPECT_EQ(buf[2], 1);
+
+	core::bit_set(buf, CHAR_BIT * 2 - 3);
+	EXPECT_EQ(buf[0], 0);
+	EXPECT_EQ(buf[1], 4);
+	EXPECT_EQ(buf[2], 1);
+
+	core::bit_set(buf, CHAR_BIT * 2 - 6);
+	EXPECT_EQ(buf[0], 0);
+	EXPECT_EQ(buf[1], 36);
+	EXPECT_EQ(buf[2], 1);
 }
 
 TEST(Bit, Write) {

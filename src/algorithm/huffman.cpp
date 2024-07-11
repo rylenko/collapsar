@@ -44,10 +44,6 @@ constexpr void huffman_tree_direction_dump(
 }
 
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
-	// Huffman compression requires double read. So to seek later we need to
-	// require input to be ifstream.
-	validate_input_is_ifstream_(input);
-
 	// Count frequencies of characters to build a tree with optimal paths.
 	core::FreqCounter freq_counter;
 	input >> freq_counter;
@@ -136,15 +132,6 @@ void HuffmanCompressor::compress_(
 	}
 }
 
-constexpr void HuffmanCompressor::validate_input_is_ifstream_(
-		const std::istream& input) {
-	if (!dynamic_cast<const std::ifstream*>(&input)) {
-		throw core::CompressorError(
-			"Huffman compression requires double reads using seek, so only file streams"
-			" are supported");
-	}
-}
-
 void HuffmanDecompressor::decompress(
 		std::istream& input, std::ostream& output) {
 	(void)input;
@@ -172,14 +159,9 @@ constexpr HuffmanTreeNode::HuffmanTreeNode(
 }
 
 constexpr HuffmanTreeNode::~HuffmanTreeNode() noexcept {
-	// Destruct and deallocate branches if current node is grouping node.
-	if (is_group()) {
-		left_->~HuffmanTreeNode();
-		delete left_;
-
-		left_->~HuffmanTreeNode();
-		delete left_;
-	}
+	// Deallocate branches or do nothing if they are nullptr.
+	delete left_;
+	delete right_;
 }
 
 constexpr bool operator<(
@@ -193,10 +175,17 @@ constexpr void HuffmanTreeNode::calculate_paths(
 		const size_t buf_index) const noexcept {
 	if (is_group()) {
 		// Continue recursion through left branch from current buffer position.
-		buf[buf_index] = HuffmanTreeDirection::Left;
+		if (buf_index >= buf.size()) {
+			buf.push_back(HuffmanTreeDirection::Left);
+		} else {
+			buf[buf_index] = HuffmanTreeDirection::Left;
+		}
 		left_->calculate_paths(paths, buf, buf_index + 1);
 
 		// Continue recursion through left branch from current buffer position.
+		//
+		// The buffer size is sufficient here because we expanded it earlier to the
+		// current level.
 		buf[buf_index] = HuffmanTreeDirection::Right;
 		right_->calculate_paths(paths, buf, buf_index + 1);
 	} else {
@@ -242,13 +231,13 @@ HuffmanTree::HuffmanTree(
 	std::vector<HuffmanTreeNode*> nodes;
 	// Create character nodes with corresponding frequencies greater than 0.
 	for (const auto& [ch, count] : freq_counter) {
-		nodes.push_back(new HuffmanTreeNode(ch, count));
+		nodes.push_back(new HuffmanTreeNode{ch, count});
 	}
 
 	// Build a tree of nodes. The most frequent nodes have the shortest path.
 	while (nodes.size() > 1) {
 		// Sort nodes by frequency descending.
-		std::sort(nodes.begin(), nodes.end(), core::LessPtr<HuffmanTreeNode>{});
+		std::ranges::sort(nodes, core::LessPtr<HuffmanTreeNode>{});
 
 		// Group the last two elements into a grouping node.
 		HuffmanTreeNode* const right{nodes.back()};
@@ -264,12 +253,8 @@ HuffmanTree::HuffmanTree(
 }
 
 constexpr HuffmanTree::~HuffmanTree() noexcept {
-	if (nullptr != root_) {
-		// Call node's destructor to free possible left and right subnodes.
-		root_->~HuffmanTreeNode();
-		// Free allocated node.
-		delete root_;
-	}
+	// Free allocated root node or do nothing if it is nullptr.
+	delete root_;
 }
 
 
