@@ -50,6 +50,7 @@ add_executable(test
 	src/core/freq_counter.cpp
 
 	tests/core/bit.cpp
+	tests/core/comparator.cpp
 	tests/core/freq_counter.cpp
 	tests/algorithm/compressor_factory.cpp
 	tests/algorithm/decompressor_factory.cpp
