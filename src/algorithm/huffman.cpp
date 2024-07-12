@@ -213,7 +213,7 @@ constexpr void HuffmanTreeNode::dump(
 		++bit_index;
 
 		// Write character to the buffer.
-		core::bit_write(buf, bit_index, ch_);
+		core::bit_write_char(buf, bit_index, ch_);
 		bit_index += CHAR_BIT;
 	}
 }
