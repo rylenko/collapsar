@@ -105,7 +105,7 @@ void HuffmanCompressor::compress_(
 					throw core::CompressorError(
 						"failed to write the part of compressed content");
 				}
-				std::fill(std::begin(output_buf), std::end(output_buf), 0);
+				std::ranges::fill(output_buf, 0);
 				output_buf_bit_index = 0;
 			}
 		}
@@ -190,8 +190,7 @@ constexpr void HuffmanTreeNode::calculate_paths(
 		right_->calculate_paths(paths, buf, buf_index + 1);
 	} else {
 		// Copy current buffer to the paths map.
-		std::ranges::copy_n(
-			buf.begin(), buf_index + 1, std::back_inserter(paths[ch_]));
+		std::copy_n(buf.begin(), buf_index + 1, std::back_inserter(paths[ch_]));
 	}
 }
 
