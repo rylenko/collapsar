@@ -1,3 +1,5 @@
+// TODO: Keep here only compressor and decompressor.
+
 #pragma once
 
 #include <cstddef>

@@ -7,7 +7,7 @@
 #include "algorithm/huffman.h"
 #include "core/bit.h"
 
-TEST(Huffman, CompressAndDecompress) {
+TEST(Huffman, CompressAndDecompressSmall) {
 	// Create streams.
 	std::istringstream input{"Hello, world!"};
 	std::ostringstream output;
@@ -64,5 +64,73 @@ TEST(Huffman, CompressAndDecompress) {
 	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 11 + 18), 0);
 	EXPECT_EQ(core::bit_read_char(output_chars, CHAR_BIT * 11 + 19), 'o');
 
-	// TODO: Test compressed input data.
+	// Test 'H' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 19), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 20), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 21), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 22), 0b1);
+
+	// Test 'e' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 23), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 24), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 25), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 26), 0b1);
+
+	// Test 'll' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 27), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 28), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 29), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 30), 0b0);
+
+	// Test 'o' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 31), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 32), 0b1);
+
+	// Test ',' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 33), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 34), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 35), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 36), 0b0);
+
+	// Test ' ' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 37), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 38), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 39), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 40), 0b0);
+
+	// Test 'w' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 41), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 42), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 43), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 44), 0b1);
+
+	// Test 'o' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 45), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 46), 0b1);
+
+	// Test 'r' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 47), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 48), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 49), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 50), 0b0);
+
+	// Test 'l' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 51), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 52), 0b0);
+
+	// Test 'd' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 53), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 54), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 55), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 56), 0b0);
+
+	// Test 'd' compression.
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 57), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 58), 0b0);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 59), 0b1);
+	EXPECT_EQ(core::bit_get(output_chars, CHAR_BIT * 12 + 60), 0b1);
+
+	// TODO: Add decompression test.
 }
+
+// TODO: Add tests with huge input stream

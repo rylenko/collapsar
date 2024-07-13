@@ -43,6 +43,7 @@ constexpr void huffman_tree_direction_dump(
 	++bit_index;
 }
 
+
 void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Count frequencies of characters to build a tree with optimal paths.
 	core::FreqCounter freq_counter;
@@ -83,7 +84,13 @@ void HuffmanCompressor::compress_(
 	HuffmanTreePaths paths{tree.calculate_paths()};
 
 	// Process input's content.
-	while (input.read(input_buf, sizeof(input_buf))) {
+	while (!input.eof()) {
+		// Read input to the buffer.
+		input.read(input_buf, sizeof(input_buf));
+		if (!input && !input.eof()) {
+			throw core::CompressorError("failed to read from input stream");
+		}
+
 		// Compress each readed character.
 		for (auto char_index{0}; char_index < input.gcount(); ++char_index) {
 			// Get character's tree path.
@@ -109,11 +116,6 @@ void HuffmanCompressor::compress_(
 				output_buf_bit_index = 0;
 			}
 		}
-	}
-
-	// Throw an error if failbit set without eofbit.
-	if (!input.eof()) {
-		throw core::CompressorError("failed to read the input until EOF");
 	}
 
 	// Write the leftover content of the output buffer.
@@ -190,7 +192,7 @@ constexpr void HuffmanTreeNode::calculate_paths(
 		right_->calculate_paths(paths, buf, buf_index + 1);
 	} else {
 		// Copy current buffer to the paths map.
-		std::copy_n(buf.begin(), buf_index + 1, std::back_inserter(paths[ch_]));
+		std::copy_n(buf.begin(), buf_index, std::back_inserter(paths[ch_]));
 	}
 }
 
