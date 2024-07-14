@@ -11,6 +11,7 @@
 #include <ios>
 #include <istream>
 #include <iterator>
+#include <map>
 #include <ostream>
 #include <stdexcept>
 #include <vector>
@@ -25,17 +26,97 @@ namespace algorithm {
 inline constexpr size_t INPUT_BUF_SIZE{8192};
 inline constexpr size_t OUTPUT_BUF_SIZE{8192};
 
+// The direction of the path, which can be represented as an integer. Left
+// means 0 and right means 1.
+enum class TreeDirection {
+	Left,
+	Right,
+};
+
+// Path of the tree.
+using TreePath = std::vector<TreeDirection>;
+
+// Tree path of each character.
+using TreePaths = std::map<char, TreePath>;
+
+// Huffman compression tree node to store characters with corresponsing
+// frequency or left and right nodes.
+class TreeNode {
+	public:
+		// Creates a character node with the corresponding frequency. The left and
+		// right branches are `nullptr`.
+		constexpr TreeNode(char ch, size_t freq) noexcept;
+
+		// Creates a grouping node with left and right branches. In the case of this
+		// constructor both cannot be `nullptr`, you need to use another constructor.
+		constexpr TreeNode(TreeNode* left, TreeNode* right) noexcept;
+
+		// Destructs the node.
+		constexpr ~TreeNode() noexcept;
+
+		// A node is less than another if its frequency is higher. That is, the most
+		// frequent node requires less weight.
+		friend constexpr bool operator<(
+			const TreeNode& x, const TreeNode& y) noexcept;
+
+		// Recursively calculates character node paths using buffer and its position.
+		constexpr void calculate_paths(
+			TreePaths& paths, TreePath& buf, size_t buf_index) const noexcept;
+
+		// Dumps current node to the passed buffer starting from passed bit index.
+		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
+
+		// Determines that node is another nodes group.
+		constexpr bool is_group() const noexcept;
+
+	private:
+		// A character with a certain frequency or a random character if the left and
+		// right branches are set.
+		char ch_;
+		// Character frequency or the sum of the frequencies of the left and right
+		// branches. Must be greater than 0.
+		size_t freq_;
+
+		// They are either both `nullptr`, or they both point to other nodes.
+		TreeNode* left_;
+		TreeNode* right_;
+};
+
+// Huffman compression characters tree.
+class Tree: public core::Compressor {
+	public:
+		// Counts the frequencies of content from the `input`, then builds a tree,
+		// where the more frequent characters are closer to the root.
+		//
+		// After successfully construction, the stream must be in the EOF state:
+		// eofbit and failbit.
+		explicit Tree(const core::FreqCounter& freq_counter) noexcept;
+
+		// Destructs the built tree.
+		constexpr ~Tree() noexcept;
+
+		// Compresses input's content to output using passed tree.
+		void compress(std::istream& input, std::ostream& output) override;
+
+	private:
+		// Calculate paths. So this function calculates tree path for each character.
+		TreePaths calculate_paths_() const noexcept;
+
+		// Dumps the tree to the passed buffer starting from passed bit index.
+		constexpr void dump_(char* buf, size_t& bit_index) const noexcept;
+
+		TreeNode* root_;
+};
+
 // Dumps the tree direction bit to the passed buffer at the passed bit index.
 // Then it increments the passed bit index.
 constexpr void huffman_tree_direction_dump(
-		HuffmanTreeDirection direction,
-		char* const buf,
-		size_t& bit_index) noexcept {
+		TreeDirection direction, char* const buf, size_t& bit_index) noexcept {
 	switch (direction) {
-	case HuffmanTreeDirection::Left:
+	case TreeDirection::Left:
 		core::bit_clear(buf, bit_index);
 		break;
-	case HuffmanTreeDirection::Right:
+	case TreeDirection::Right:
 		core::bit_set(buf, bit_index);
 		break;
 	}
@@ -63,7 +144,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 
 	// Build the tree using character frequencies. We will encode characters using
 	// tree paths.
-	HuffmanTree tree{freq_counter};
+	Tree tree{freq_counter};
 	// Compress input's content to output through built tree.
 	tree.compress(input, output);
 }
@@ -74,14 +155,13 @@ void HuffmanDecompressor::decompress(
 	output << "This is Huffman decompressor." << std::endl;
 }
 
-constexpr HuffmanTreeNode::HuffmanTreeNode(
-		const char ch, const size_t freq) noexcept
+constexpr TreeNode::TreeNode(const char ch, const size_t freq) noexcept
 		: ch_{ch}, freq_{freq}, left_{nullptr}, right_{nullptr} {
 	assert(freq > 0 && "zero frequency is useless for the tree");
 }
 
-constexpr HuffmanTreeNode::HuffmanTreeNode(
-		HuffmanTreeNode* const left, HuffmanTreeNode* const right) noexcept
+constexpr TreeNode::TreeNode(
+		TreeNode* const left, TreeNode* const right) noexcept
 		: ch_{'\0'},
 		freq_{0},  // Will change in the constructor body after pointers validation.
 		left_{left},
@@ -95,27 +175,24 @@ constexpr HuffmanTreeNode::HuffmanTreeNode(
 	assert(freq_ > 0 && "zero frequency is useless for the tree");
 }
 
-constexpr HuffmanTreeNode::~HuffmanTreeNode() noexcept {
+constexpr TreeNode::~TreeNode() noexcept {
 	// Deallocate branches or do nothing if they are nullptr.
 	delete left_;
 	delete right_;
 }
 
-constexpr bool operator<(
-		const HuffmanTreeNode& x, const HuffmanTreeNode& y) noexcept {
+constexpr bool operator<(const TreeNode& x, const TreeNode& y) noexcept {
 	return x.freq_ > y.freq_;
 }
 
-constexpr void HuffmanTreeNode::calculate_paths(
-		HuffmanTreePaths& paths,
-		HuffmanTreePath& buf,
-		const size_t buf_index) const noexcept {
+constexpr void TreeNode::calculate_paths(
+		TreePaths& paths, TreePath& buf, const size_t buf_index) const noexcept {
 	if (is_group()) {
 		// Continue recursion through left branch from current buffer position.
 		if (buf_index >= buf.size()) {
-			buf.push_back(HuffmanTreeDirection::Left);
+			buf.push_back(TreeDirection::Left);
 		} else {
-			buf[buf_index] = HuffmanTreeDirection::Left;
+			buf[buf_index] = TreeDirection::Left;
 		}
 		left_->calculate_paths(paths, buf, buf_index + 1);
 
@@ -123,7 +200,7 @@ constexpr void HuffmanTreeNode::calculate_paths(
 		//
 		// The buffer size is sufficient here because we expanded it earlier to the
 		// current level.
-		buf[buf_index] = HuffmanTreeDirection::Right;
+		buf[buf_index] = TreeDirection::Right;
 		right_->calculate_paths(paths, buf, buf_index + 1);
 	} else {
 		// Copy current buffer to the paths map.
@@ -134,7 +211,7 @@ constexpr void HuffmanTreeNode::calculate_paths(
 // Dumps current node to the passed buffer starting from passed bit index.
 //
 // Make sure that buffer is big enough to store node's dump.
-constexpr void HuffmanTreeNode::dump(
+constexpr void TreeNode::dump(
 		char* const buf, size_t& bit_index) const noexcept {
 	if (is_group()) {
 		// Set the bit, which means that we have a grouping node.
@@ -155,32 +232,31 @@ constexpr void HuffmanTreeNode::dump(
 	}
 }
 
-constexpr bool HuffmanTreeNode::is_group() const noexcept {
+constexpr bool TreeNode::is_group() const noexcept {
 	// There is no need to check right node against `nullptr` because a grouping
 	// node has either 0 branches or both.
 	return nullptr != left_;
 }
 
-HuffmanTree::HuffmanTree(
-		const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
+Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
 	// Character nodes to store frequencies greater than 0.
-	std::vector<HuffmanTreeNode*> nodes;
+	std::vector<TreeNode*> nodes;
 	// Create character nodes with corresponding frequencies greater than 0.
 	for (const auto& [ch, count] : freq_counter) {
-		nodes.push_back(new HuffmanTreeNode{ch, count});
+		nodes.push_back(new TreeNode{ch, count});
 	}
 
 	// Build a tree of nodes. The most frequent nodes have the shortest path.
 	while (nodes.size() > 1) {
 		// Sort nodes by frequency descending.
-		std::ranges::sort(nodes, core::LessPtr<HuffmanTreeNode>{});
+		std::ranges::sort(nodes, core::LessPtr<TreeNode>{});
 
 		// Group the last two elements into a grouping node.
-		HuffmanTreeNode* const right{nodes.back()};
+		TreeNode* const right{nodes.back()};
 		nodes.pop_back();
-		HuffmanTreeNode* const left{nodes.back()};
+		TreeNode* const left{nodes.back()};
 		nodes.pop_back();
-		nodes.push_back(new HuffmanTreeNode{left, right});
+		nodes.push_back(new TreeNode{left, right});
 	}
 	// Replace current `nullptr` root with built root if exists.
 	if (!nodes.empty()) {
@@ -188,13 +264,13 @@ HuffmanTree::HuffmanTree(
 	}
 }
 
-constexpr HuffmanTree::~HuffmanTree() noexcept {
+constexpr Tree::~Tree() noexcept {
 	// Free allocated root node or do nothing if it is nullptr.
 	delete root_;
 }
 
 // TODO: Make more readable, split into small functions.
-void HuffmanTree::compress(std::istream& input, std::ostream& output) {
+void Tree::compress(std::istream& input, std::ostream& output) {
 	// Create buffer to read input content.
 	char input_buf[INPUT_BUF_SIZE]{};
 
@@ -206,7 +282,7 @@ void HuffmanTree::compress(std::istream& input, std::ostream& output) {
 	dump_(output_buf, output_buf_bit_index);
 
 	// Get the tree paths of each character to compress these character.
-	HuffmanTreePaths paths{calculate_paths_()};
+	TreePaths paths{calculate_paths_()};
 
 	// Read, compress and write input content.
 	while (!input.eof()) {
@@ -219,10 +295,10 @@ void HuffmanTree::compress(std::istream& input, std::ostream& output) {
 		// Compress and write each readed character.
 		for (auto char_index{0}; char_index < input.gcount(); ++char_index) {
 			// Get character's tree path.
-			const HuffmanTreePath& path{paths[input_buf[char_index]]};
+			const TreePath& path{paths[input_buf[char_index]]};
 
 			// Write path bits to the output buffer.
-			for (HuffmanTreeDirection direction : path) {
+			for (TreeDirection direction : path) {
 				// Dump direction's bit.
 				huffman_tree_direction_dump(direction, output_buf, output_buf_bit_index);
 
@@ -260,11 +336,11 @@ void HuffmanTree::compress(std::istream& input, std::ostream& output) {
 	}
 }
 
-HuffmanTreePaths HuffmanTree::calculate_paths_() const noexcept {
-	HuffmanTreePaths paths;
+TreePaths Tree::calculate_paths_() const noexcept {
+	TreePaths paths;
 	if (nullptr != root_) {
 		// Calculate paths recursively using buffer from the root node.
-		HuffmanTreePath buf;
+		TreePath buf;
 		root_->calculate_paths(paths, buf, 0);
 	}
 	return paths;
@@ -273,8 +349,7 @@ HuffmanTreePaths HuffmanTree::calculate_paths_() const noexcept {
 // Dumps the tree to the passed buffer starting from passed bit index.
 //
 // Make sure that buffer is big enough to store node's dump.
-constexpr void HuffmanTree::dump_(
-		char* const buf, size_t& bit_index) const noexcept {
+constexpr void Tree::dump_(char* const buf, size_t& bit_index) const noexcept {
 	if (nullptr != root_) {
 		root_->dump(buf, bit_index);
 	}
