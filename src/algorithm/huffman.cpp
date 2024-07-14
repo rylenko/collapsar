@@ -25,13 +25,12 @@ namespace algorithm {
 inline constexpr size_t INPUT_BUF_SIZE{8192};
 inline constexpr size_t OUTPUT_BUF_SIZE{8192};
 
-// Dumps the tree direction to the passed buffer starting from passed bit
-// index.
+// Dumps the tree direction bit to the passed buffer at the passed bit index.
+// Then it increments the passed bit index.
 constexpr void huffman_tree_direction_dump(
 		HuffmanTreeDirection direction,
 		char* const buf,
 		size_t& bit_index) noexcept {
-	// Choose bit 0 or bit 1 and write it.
 	switch (direction) {
 	case HuffmanTreeDirection::Left:
 		core::bit_clear(buf, bit_index);
@@ -50,7 +49,8 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	input >> freq_counter;
 	// Clear eofbit and failbit to seek to the beginning of the stream.
 	input.clear();
-	// Seek to the beginning of the input to apply tree paths.
+	// Seek to the beginning of the input to read content again and apply tree
+	// paths to it.
 	input.seekg(0, std::ios::beg);
 	if (!input.good()) {
 		throw core::CompressorError("failed to seek to the beginning of the input");
@@ -61,7 +61,8 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 		throw core::CompressorError("failed to write input's size to the output");
 	}
 
-	// Build the tree using character frequencies.
+	// Build the tree using character frequencies. We will encode characters using
+	// tree paths.
 	HuffmanTree tree{freq_counter};
 	// Compress input's content to output through built tree.
 	compress_(input, tree, output);
@@ -73,17 +74,17 @@ void HuffmanCompressor::compress_(
 	// Create buffer to read input content.
 	char input_buf[INPUT_BUF_SIZE]{};
 
-	// Create buffer to conveniently work with bits.
+	// Create buffer to write compressed content.
 	char output_buf[OUTPUT_BUF_SIZE]{};
 	size_t output_buf_bit_index{0};
 
-	// Dump the tree to the buffer.
+	// Dump the tree to the buffer to restore it during decompression.
 	tree.dump(output_buf, output_buf_bit_index);
 
-	// Get each character tree paths.
+	// Get the tree paths of each character to compress these character.
 	HuffmanTreePaths paths{tree.calculate_paths()};
 
-	// Process input's content.
+	// Read, compress and write input content.
 	while (!input.eof()) {
 		// Read input to the buffer.
 		input.read(input_buf, sizeof(input_buf));
@@ -91,7 +92,7 @@ void HuffmanCompressor::compress_(
 			throw core::CompressorError("failed to read from input stream");
 		}
 
-		// Compress each readed character.
+		// Compress and write each readed character.
 		for (auto char_index{0}; char_index < input.gcount(); ++char_index) {
 			// Get character's tree path.
 			const HuffmanTreePath& path{paths[input_buf[char_index]]};
@@ -118,10 +119,11 @@ void HuffmanCompressor::compress_(
 		}
 	}
 
-	// Write the leftover content of the output buffer.
+	// Try to write the leftover content of the output buffer.
 	if (output_buf_bit_index > 0) {
-		const size_t tail = output_buf_bit_index % CHAR_BIT > 0 ? 1 : 0;
-		output.write(output_buf, output_buf_bit_index / CHAR_BIT + tail);
+		const size_t output_size =
+			output_buf_bit_index / CHAR_BIT + (output_buf_bit_index % CHAR_BIT > 0);
+		output.write(output_buf, output_size);
 		if (output.bad()) {
 			throw core::CompressorError(
 				"failed to write the last part of compressed content");
@@ -155,6 +157,7 @@ constexpr HuffmanTreeNode::HuffmanTreeNode(
 	// A grouping node must contain at least one branch to obtain a non-zero
 	// frequency.
 	assert(nullptr != left && nullptr != right && "they must not be `nullptr`");
+
 	// Update frequency after branch pointers validation.
 	freq_ = left->freq_ + right->freq_;
 	assert(freq_ > 0 && "zero frequency is useless for the tree");

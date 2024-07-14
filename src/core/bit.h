@@ -32,6 +32,7 @@ constexpr char bit_read_char(
 	const int right_mask{0xff >> (CHAR_BIT - index % CHAR_BIT)};
 	const int right{right_ext & right_mask};
 
+	// Concatenate left and right parts of the character.
 	return static_cast<char>(left) | static_cast<char>(right);
 }
 
