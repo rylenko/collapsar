@@ -1,4 +1,4 @@
-// TODO: Keep here only compressor and decompressor. Move compress_ to Tree class
+// TODO: Keep here only compressor and decompressor.
 
 #pragma once
 
@@ -75,7 +75,7 @@ class HuffmanTreeNode {
 };
 
 // Huffman compression characters tree.
-class HuffmanTree {
+class HuffmanTree: public core::Compressor {
 	public:
 		// Counts the frequencies of content from the `input`, then builds a tree,
 		// where the more frequent characters are closer to the root.
@@ -87,24 +87,22 @@ class HuffmanTree {
 		// Destructs the built tree.
 		constexpr ~HuffmanTree() noexcept;
 
-		// Calculate paths. So this function calculates tree path for each character.
-		HuffmanTreePaths calculate_paths() const noexcept;
-
-		// Dumps the tree to the passed buffer starting from passed bit index.
-		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
+		// Compresses input's content to output using passed tree.
+		void compress(std::istream& input, std::ostream& output) override;
 
 	private:
+		// Calculate paths. So this function calculates tree path for each character.
+		HuffmanTreePaths calculate_paths_() const noexcept;
+
+		// Dumps the tree to the passed buffer starting from passed bit index.
+		constexpr void dump_(char* buf, size_t& bit_index) const noexcept;
+
 		HuffmanTreeNode* root_;
 };
 
 class HuffmanCompressor: public core::Compressor {
 	public:
 		void compress(std::istream& input, std::ostream& output) override;
-
-	private:
-		// Compresses input's content to output using passed tree.
-		static void compress_(
-			std::istream& input, const HuffmanTree& tree, std::ostream& output);
 };
 
 class HuffmanDecompressor: public core::Decompressor {

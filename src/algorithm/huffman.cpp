@@ -65,75 +65,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// tree paths.
 	HuffmanTree tree{freq_counter};
 	// Compress input's content to output through built tree.
-	compress_(input, tree, output);
-}
-
-// TODO: Make more readable, split into small functions.
-void HuffmanCompressor::compress_(
-		std::istream& input, const HuffmanTree& tree, std::ostream& output) {
-	// Create buffer to read input content.
-	char input_buf[INPUT_BUF_SIZE]{};
-
-	// Create buffer to write compressed content.
-	char output_buf[OUTPUT_BUF_SIZE]{};
-	size_t output_buf_bit_index{0};
-
-	// Dump the tree to the buffer to restore it during decompression.
-	tree.dump(output_buf, output_buf_bit_index);
-
-	// Get the tree paths of each character to compress these character.
-	HuffmanTreePaths paths{tree.calculate_paths()};
-
-	// Read, compress and write input content.
-	while (!input.eof()) {
-		// Read input to the buffer.
-		input.read(input_buf, sizeof(input_buf));
-		if (!input && !input.eof()) {
-			throw core::CompressorError("failed to read from input stream");
-		}
-
-		// Compress and write each readed character.
-		for (auto char_index{0}; char_index < input.gcount(); ++char_index) {
-			// Get character's tree path.
-			const HuffmanTreePath& path{paths[input_buf[char_index]]};
-
-			// Write path bits to the output buffer.
-			for (HuffmanTreeDirection direction : path) {
-				// Dump direction's bit.
-				huffman_tree_direction_dump(direction, output_buf, output_buf_bit_index);
-
-				// Do not drain the output buffer if it is not full.
-				if (output_buf_bit_index / CHAR_BIT < sizeof(output_buf)) {
-					continue;
-				}
-
-				// Drain the output buffer to the stream.
-				output.write(output_buf, sizeof(output_buf));
-				if (output.bad()) {
-					throw core::CompressorError(
-						"failed to write the part of compressed content");
-				}
-				std::ranges::fill(output_buf, 0);
-				output_buf_bit_index = 0;
-			}
-		}
-	}
-
-	// Try to write the leftover content of the output buffer.
-	if (output_buf_bit_index > 0) {
-		const size_t output_size =
-			output_buf_bit_index / CHAR_BIT + (output_buf_bit_index % CHAR_BIT > 0);
-		output.write(output_buf, output_size);
-		if (output.bad()) {
-			throw core::CompressorError(
-				"failed to write the last part of compressed content");
-		}
-	}
-	// Try to flush the output.
-	output.flush();
-	if (output.bad()) {
-		throw core::CompressorError("failed to flush the output.");
-	}
+	tree.compress(input, output);
 }
 
 void HuffmanDecompressor::decompress(
@@ -261,8 +193,74 @@ constexpr HuffmanTree::~HuffmanTree() noexcept {
 	delete root_;
 }
 
+// TODO: Make more readable, split into small functions.
+void HuffmanTree::compress(std::istream& input, std::ostream& output) {
+	// Create buffer to read input content.
+	char input_buf[INPUT_BUF_SIZE]{};
 
-HuffmanTreePaths HuffmanTree::calculate_paths() const noexcept {
+	// Create buffer to write compressed content.
+	char output_buf[OUTPUT_BUF_SIZE]{};
+	size_t output_buf_bit_index{0};
+
+	// Dump the tree to the buffer to restore it during decompression.
+	dump_(output_buf, output_buf_bit_index);
+
+	// Get the tree paths of each character to compress these character.
+	HuffmanTreePaths paths{calculate_paths_()};
+
+	// Read, compress and write input content.
+	while (!input.eof()) {
+		// Read input to the buffer.
+		input.read(input_buf, sizeof(input_buf));
+		if (!input && !input.eof()) {
+			throw core::CompressorError("failed to read from input stream");
+		}
+
+		// Compress and write each readed character.
+		for (auto char_index{0}; char_index < input.gcount(); ++char_index) {
+			// Get character's tree path.
+			const HuffmanTreePath& path{paths[input_buf[char_index]]};
+
+			// Write path bits to the output buffer.
+			for (HuffmanTreeDirection direction : path) {
+				// Dump direction's bit.
+				huffman_tree_direction_dump(direction, output_buf, output_buf_bit_index);
+
+				// Do not drain the output buffer if it is not full.
+				if (output_buf_bit_index / CHAR_BIT < sizeof(output_buf)) {
+					continue;
+				}
+
+				// Drain the output buffer to the stream.
+				output.write(output_buf, sizeof(output_buf));
+				if (output.bad()) {
+					throw core::CompressorError(
+						"failed to write the part of compressed content");
+				}
+				std::ranges::fill(output_buf, 0);
+				output_buf_bit_index = 0;
+			}
+		}
+	}
+
+	// Try to write the leftover content of the output buffer.
+	if (output_buf_bit_index > 0) {
+		const size_t output_size =
+			output_buf_bit_index / CHAR_BIT + (output_buf_bit_index % CHAR_BIT > 0);
+		output.write(output_buf, output_size);
+		if (output.bad()) {
+			throw core::CompressorError(
+				"failed to write the last part of compressed content");
+		}
+	}
+	// Try to flush the output.
+	output.flush();
+	if (output.bad()) {
+		throw core::CompressorError("failed to flush the output.");
+	}
+}
+
+HuffmanTreePaths HuffmanTree::calculate_paths_() const noexcept {
 	HuffmanTreePaths paths;
 	if (nullptr != root_) {
 		// Calculate paths recursively using buffer from the root node.
@@ -275,7 +273,7 @@ HuffmanTreePaths HuffmanTree::calculate_paths() const noexcept {
 // Dumps the tree to the passed buffer starting from passed bit index.
 //
 // Make sure that buffer is big enough to store node's dump.
-constexpr void HuffmanTree::dump(
+constexpr void HuffmanTree::dump_(
 		char* const buf, size_t& bit_index) const noexcept {
 	if (nullptr != root_) {
 		root_->dump(buf, bit_index);
