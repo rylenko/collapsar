@@ -1,4 +1,4 @@
-// TODO: Keep here only compressor and decompressor.
+// TODO: Keep here only compressor and decompressor. Move compress_ to Tree class
 
 #pragma once
 
