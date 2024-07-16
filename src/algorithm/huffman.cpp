@@ -131,7 +131,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Seek to the beginning of the input to read content again and apply tree
 	// paths to it.
 	input.seekg(0, std::ios::beg);
-	if (!input.good()) {
+	if (!input) {
 		throw core::CompressorError("failed to seek to the beginning of the input");
 	}
 	// Write readed input size to the output.
@@ -140,28 +140,27 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 		throw core::CompressorError("failed to write input's size to the output");
 	}
 
-	// Build the tree using character frequencies. We will encode characters using
-	// tree paths.
-	Tree tree{freq_counter};
-
-	// Create buffer to read input content.
-	char input_buf[INPUT_BUF_SIZE]{};
-
-	// Create buffer to write compressed content.
+	// Create output buffer to store tree dump and compressed content.
 	char output_buf[OUTPUT_BUF_SIZE]{};
 	size_t output_buf_bit_index{0};
 
+	// Build the tree using character frequencies. We will encode characters using
+	// tree paths.
+	Tree tree{freq_counter};
 	// Dump the tree to the buffer to restore it during decompression.
 	tree.dump(output_buf, output_buf_bit_index);
 
 	// Get the tree paths of each character to compress these character.
 	TreePaths paths{tree.calculate_paths()};
 
+	// Create buffer to store readed input content.
+	char input_buf[INPUT_BUF_SIZE]{};
+
 	// Read, compress and write input content.
 	while (!input.eof()) {
 		// Read input to the buffer.
 		input.read(input_buf, sizeof(input_buf));
-		if (!input && !input.eof()) {
+		if (input.bad() || (input.fail() && !input.eof())) {
 			throw core::CompressorError("failed to read from input stream");
 		}
 
@@ -202,6 +201,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 				"failed to write the last part of compressed content");
 		}
 	}
+
 	// Try to flush the output.
 	output.flush();
 	if (output.bad()) {
