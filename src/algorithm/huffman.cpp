@@ -20,6 +20,7 @@
 #include "core/bit.h"
 #include "core/comparator.h"
 #include "core/compressor.h"
+#include "core/decompressor.h"
 #include "core/freq_counter.h"
 
 namespace algorithm {
@@ -212,7 +213,13 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 
 void HuffmanDecompressor::decompress(
 		std::istream& input, std::ostream& output) {
-	(void)input;
+	// Read decompressed content size.
+	uint64_t decompressed_size;
+	input >> decompressed_size;
+	if (input.fail()) {
+		throw core::DecompressorError("failed to read decompressed content size");
+	}
+
 	output << "This is Huffman decompressor." << std::endl;
 }
 
