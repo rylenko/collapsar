@@ -5,6 +5,7 @@
 #include <cassert>
 #include <climits>
 #include <cstddef>
+#include <cstdint>
 
 #include <algorithm>
 #include <fstream>
@@ -45,7 +46,7 @@ class TreeNode {
 	public:
 		// Creates a character node with the corresponding frequency. The left and
 		// right branches are `nullptr`.
-		constexpr TreeNode(char ch, size_t freq) noexcept;
+		constexpr TreeNode(char ch, uint64_t freq) noexcept;
 
 		// Creates a grouping node with left and right branches. In the case of this
 		// constructor both cannot be `nullptr`, you need to use another constructor.
@@ -75,7 +76,7 @@ class TreeNode {
 		char ch_;
 		// Character frequency or the sum of the frequencies of the left and right
 		// branches. Must be greater than 0.
-		size_t freq_;
+		uint64_t freq_;
 
 		// They are either both `nullptr`, or they both point to other nodes.
 		TreeNode* left_;
@@ -215,7 +216,7 @@ void HuffmanDecompressor::decompress(
 	output << "This is Huffman decompressor." << std::endl;
 }
 
-constexpr TreeNode::TreeNode(const char ch, const size_t freq) noexcept
+constexpr TreeNode::TreeNode(const char ch, const uint64_t freq) noexcept
 		: ch_{ch}, freq_{freq}, left_{nullptr}, right_{nullptr} {
 	assert(freq > 0 && "zero frequency is useless for the tree");
 }

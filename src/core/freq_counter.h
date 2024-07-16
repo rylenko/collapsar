@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cstddef>
+#include <cstdint>
+
 #include <istream>
 #include <map>
 #include <stdexcept>
@@ -14,7 +15,7 @@ namespace core {
 class FreqCounter {
 	public:
 		// Storage of characters and corresponding counts.
-		using Counts = std::map<char, size_t>;
+		using Counts = std::map<char, uint64_t>;
 
 		// Counts characters of the passed stream until EOF.
 		//
@@ -34,7 +35,7 @@ class FreqCounter {
 		}
 
 		// Returns total count of characters.
-		constexpr size_t get_total() const noexcept {
+		constexpr uint64_t get_total() const noexcept {
 			return total_;
 		}
 
@@ -43,7 +44,7 @@ class FreqCounter {
 		void count_(char ch) noexcept;
 
 		Counts counts_;
-		size_t total_ = 0;
+		uint64_t total_ = 0;
 };
 
 // Frequency counter error.
