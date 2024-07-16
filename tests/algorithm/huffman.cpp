@@ -7,12 +7,35 @@
 #include "algorithm/huffman.h"
 #include "core/bit.h"
 
+TEST(Huffman, CompressAndDecompressEmpty) {
+	// Create streams.
+	std::istringstream input;
+	std::ostringstream output;
+
+	// Create compressor and compress.
+	algorithm::HuffmanCompressor compressor;
+	compressor.compress(input, output);
+
+	// Test stream states.
+	EXPECT_TRUE(input.eof() && input.fail() && !input.bad());
+	EXPECT_TRUE(output.good());
+
+	// Get output.
+	const char* const output_chars{output.view().data()};
+
+	// Test input length.
+	EXPECT_EQ(output_chars[0], '0');
+	EXPECT_EQ(output.tellp(), 1);
+
+	// TODO: Add decompression test.
+}
+
 TEST(Huffman, CompressAndDecompressSmall) {
 	// Create streams.
 	std::istringstream input{"Hello, world!"};
 	std::ostringstream output;
 
-	// Create compressor.
+	// Create compressor and compress.
 	algorithm::HuffmanCompressor compressor;
 	compressor.compress(input, output);
 
