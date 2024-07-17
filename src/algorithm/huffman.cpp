@@ -1,4 +1,6 @@
-// TODO: more constexprs, noexcepts and consts
+// TODO: more constexprs, noexcepts and consts.
+// TODO: Clear comments and docs.
+// TODO: try to avoid errors, for example, with invalid dump received.
 
 #include "algorithm/huffman.h"
 
@@ -25,7 +27,10 @@
 
 namespace algorithm {
 
+// Note that the buffer size must be large enough to contain a tree dump.
 constexpr size_t INPUT_BUF_SIZE{8192};
+
+// Note that the buffer size must be large enough to contain a tree dump.
 constexpr size_t OUTPUT_BUF_SIZE{8192};
 
 // The direction of the path, which can be represented as an integer. Left
@@ -45,12 +50,15 @@ using TreePaths = std::map<char, TreePath>;
 // frequency or left and right nodes.
 class TreeNode {
 	public:
+		// Constructs empty node.
+		constexpr TreeNode() noexcept = default;
+
 		// Creates a character node with the corresponding frequency. The left and
 		// right branches are `nullptr`.
 		constexpr TreeNode(char ch, uint64_t freq) noexcept;
 
-		// Creates a grouping node with left and right branches. In the case of this
-		// constructor both cannot be `nullptr`, you need to use another constructor.
+		// Creates a grouping node with left and right branches, which both must not
+		// be `nullptr`.
 		constexpr TreeNode(TreeNode* left, TreeNode* right) noexcept;
 
 		// Destructs the node.
@@ -73,22 +81,31 @@ class TreeNode {
 		// Determines that node is another nodes group.
 		constexpr bool is_group() const noexcept;
 
+		// Loads a new node from the passed buffer starting from passed bit index.
+		//
+		// Destructs and deallocates left and right branches if exists.
+		constexpr void load(const char* buf, size_t& bit_index) noexcept;
+
 	private:
 		// A character with a certain frequency or a random character if the left and
 		// right branches are set.
-		char ch_;
+		char ch_{'\0'};
 		// Character frequency or the sum of the frequencies of the left and right
-		// branches. Must be greater than 0.
-		uint64_t freq_;
+		// branches. Frequency can be zero only when loading a dump, since the
+		// frequency is only needed to form a tree.
+		uint64_t freq_{0};
 
 		// They are either both `nullptr`, or they both point to other nodes.
-		TreeNode* left_;
-		TreeNode* right_;
+		TreeNode* left_{nullptr};
+		TreeNode* right_{nullptr};
 };
 
 // Huffman compression characters tree.
 class Tree {
 	public:
+		// Constructs empty tree.
+		constexpr Tree() noexcept = default;
+
 		// Counts the frequencies of content from the `input`, then builds a tree,
 		// where the more frequent characters are closer to the root.
 		//
@@ -110,10 +127,10 @@ class Tree {
 		// Loads the tree from the passed buffer starting from passed bit index.
 		//
 		// Destructs and deallocates current tree if exists.
-		constexpr void load(const char* buf, size_t& bit_index) const noexcept;
+		constexpr void load(const char* buf, size_t& bit_index) noexcept;
 
 	private:
-		TreeNode* root_ = nullptr;
+		TreeNode* root_{nullptr};
 };
 
 // Dumps the tree direction bit to the passed buffer at the passed bit index.
@@ -141,8 +158,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	input.clear();
 	// Seek to the beginning of the input to read content again and apply tree
 	// paths to it.
-	input.seekg(0, std::ios::beg);
-	if (!input) {
+	if (!input.seekg(0, std::ios::beg)) {
 		throw core::CompressorError("failed to seek to the beginning of the input");
 	}
 	// Write readed input size to the output.
@@ -229,31 +245,42 @@ void HuffmanDecompressor::decompress(
 		throw core::DecompressorError("failed to read decompressed content size");
 	}
 
+	// Create input buffer to store tree dump and compressed content.
+	char input_buf[OUTPUT_BUF_SIZE]{};
+	size_t input_buf_bit_index{0};
+
+	// Read the first chunk, which contains a tree dump and some compressed
+	// content.
+	input.read(input_buf, sizeof(input_buf));
+	if (input.bad() || (input.fail() && !input.eof())) {
+		throw core::CompressorError("failed to read from input stream");
+	}
+
+	// Load the tree using dump from readed chunk.
+	Tree tree;
+	tree.load(input_buf, input_buf_bit_index);
+
 	output << "This is Huffman decompressor." << std::endl;
 }
 
 constexpr TreeNode::TreeNode(const char ch, const uint64_t freq) noexcept
-		: ch_{ch}, freq_{freq}, left_{nullptr}, right_{nullptr} {
-	assert(freq > 0 && "zero frequency is useless for the tree");
+		: ch_{ch}, freq_{freq} {
+	assert(freq > 0 && "zero frequency is useless for the tree building");
 }
 
 constexpr TreeNode::TreeNode(
 		TreeNode* const left, TreeNode* const right) noexcept
-		: ch_{'\0'},
-		freq_{0},  // Will change in the constructor body after pointers validation.
-		left_{left},
-		right_{right} {
-	// A grouping node must contain at least one branch to obtain a non-zero
-	// frequency.
+		: left_{left}, right_{right} {
+	// A grouping node must contain both left and right branches.
 	assert(nullptr != left && nullptr != right && "they must not be `nullptr`");
 
 	// Update frequency after branch pointers validation.
 	freq_ = left->freq_ + right->freq_;
-	assert(freq_ > 0 && "zero frequency is useless for the tree");
+	assert(freq_ > 0 && "zero frequency is useless for the tree building");
 }
 
 constexpr TreeNode::~TreeNode() noexcept {
-	// Deallocate branches or do nothing if they are nullptr.
+	// Deallocate branches or do nothing if they are `nullptr`.
 	delete left_;
 	delete right_;
 }
@@ -312,6 +339,37 @@ constexpr bool TreeNode::is_group() const noexcept {
 	return nullptr != left_;
 }
 
+constexpr void TreeNode::load(
+		const char* const buf, size_t& bit_index) noexcept {
+	// Destruct and deallocate left and right branches of old node.
+	delete left_;
+	delete right_;
+	// Zeroize frequency because node dump does not contain frequencies.
+	freq_ = 0;
+
+	// Check that we need to load left and right branches or character.
+	if (core::bit_get(buf, bit_index) == 0b1) {
+		// Shift bit index to load the left branch.
+		++bit_index;
+
+		// Allocate and load the left branch of the node.
+		left_ = new TreeNode;
+		left_->load(buf, bit_index);
+
+		// Allocate and load the right branch of the node.
+		right_ = new TreeNode;
+		right_->load(buf, bit_index);
+	} else {
+		// Set `nullptr` to branches because new node is character node.
+		left_ = nullptr;
+		right_ = nullptr;
+
+		// Read character and shift by readed bits.
+		ch_ = core::bit_read_char(buf, bit_index);
+		bit_index += CHAR_BIT;
+	}
+}
+
 Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
 	// Character nodes to store frequencies greater than 0.
 	std::vector<TreeNode*> nodes;
@@ -360,8 +418,12 @@ constexpr void Tree::dump(char* const buf, size_t& bit_index) const noexcept {
 }
 
 constexpr void Tree::load(const char* const buf, size_t& bit_index) noexcept {
-	// Destruct and deallocate current tree to store loaded tree.
+	// Destruct and deallocate current tree to store a new tree.
 	delete root_;
+
+	// Allocate and load a new root node from accepted buffer.
+	root_ = new TreeNode;
+	root_->load(buf, bit_index);
 }
 
 }  // namespace algorithm
