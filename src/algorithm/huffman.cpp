@@ -66,6 +66,8 @@ class TreeNode {
 			TreePaths& paths, TreePath& buf, size_t buf_index) const noexcept;
 
 		// Dumps current node to the passed buffer starting from passed bit index.
+		//
+		// Make sure that buffer is big enough to store node's dump.
 		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
 
 		// Determines that node is another nodes group.
@@ -101,10 +103,17 @@ class Tree {
 		TreePaths calculate_paths() const noexcept;
 
 		// Dumps the tree to the passed buffer starting from passed bit index.
+		//
+		// Make sure that buffer is big enough to store node's dump.
 		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
 
+		// Loads the tree from the passed buffer starting from passed bit index.
+		//
+		// Destructs and deallocates current tree if exists.
+		constexpr void load(const char* buf, size_t& bit_index) const noexcept;
+
 	private:
-		TreeNode* root_;
+		TreeNode* root_ = nullptr;
 };
 
 // Dumps the tree direction bit to the passed buffer at the passed bit index.
@@ -276,9 +285,6 @@ constexpr void TreeNode::calculate_paths(
 	}
 }
 
-// Dumps current node to the passed buffer starting from passed bit index.
-//
-// Make sure that buffer is big enough to store node's dump.
 constexpr void TreeNode::dump(
 		char* const buf, size_t& bit_index) const noexcept {
 	if (is_group()) {
@@ -347,13 +353,15 @@ TreePaths Tree::calculate_paths() const noexcept {
 	return paths;
 }
 
-// Dumps the tree to the passed buffer starting from passed bit index.
-//
-// Make sure that buffer is big enough to store node's dump.
 constexpr void Tree::dump(char* const buf, size_t& bit_index) const noexcept {
 	if (nullptr != root_) {
 		root_->dump(buf, bit_index);
 	}
+}
+
+constexpr void Tree::load(const char* const buf, size_t& bit_index) noexcept {
+	// Destruct and deallocate current tree to store loaded tree.
+	delete root_;
 }
 
 }  // namespace algorithm
