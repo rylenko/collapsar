@@ -12,12 +12,12 @@ include_directories(src)
 # Configure compilation.
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug) # TODO: Use via flags
+
+# Add compilation warnings.
 if (MSVC)
-	# Add compile warnings.
 	add_compile_options(/W4 /WX)
 else()
-	# Add compile warnings.
 	add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 endif()
 
@@ -37,23 +37,36 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 	WIN32_EXECUTABLE ON
 	MACOSX_BUNDLE ON)
 
-# Fetch testing library.
-FetchContent_Declare(googletest
-	URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip
-)
-FetchContent_MakeAvailable(googletest)
-# Add test files and link them with the test library.
-add_executable(test
-	src/algorithm/compressor_factory.cpp
-	src/algorithm/decompressor_factory.cpp
-	src/algorithm/huffman.cpp
-	src/core/freq_counter.cpp
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+	# Fetch testing library.
+	FetchContent_Declare(googletest
+		URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip
+	)
+	FetchContent_MakeAvailable(googletest)
+	# Add test files and link them with the test library.
+	add_executable(test
+		src/algorithm/compressor_factory.cpp
+		src/algorithm/decompressor_factory.cpp
+		src/algorithm/huffman.cpp
+		src/core/freq_counter.cpp
 
-	tests/core/bit.cpp
-	tests/core/comparator.cpp
-	tests/core/freq_counter.cpp
-	tests/algorithm/compressor_factory.cpp
-	tests/algorithm/decompressor_factory.cpp
-	tests/algorithm/huffman.cpp
-)
-target_link_libraries(test gtest_main)
+		tests/core/bit.cpp
+		tests/core/comparator.cpp
+		tests/core/freq_counter.cpp
+		tests/algorithm/compressor_factory.cpp
+		tests/algorithm/decompressor_factory.cpp
+		tests/algorithm/huffman.cpp
+	)
+	target_link_libraries(test gtest_main)
+
+	# Find sanitizer libraries.
+	find_package(ubsan)
+	find_package(asan)
+	# Add sanitizers to debug builds.
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined -fsanitize=address")
+	target_link_options(${PROJECT_NAME}
+		BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address)
+	target_link_options(test
+		BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address)
+endif()
+
