@@ -28,10 +28,10 @@
 namespace algorithm {
 
 // Note that the buffer size must be large enough to contain a tree dump.
-constexpr size_t INPUT_BUF_SIZE{8192};
+constexpr size_t INPUT_BUF_SIZE{16384};
 
 // Note that the buffer size must be large enough to contain a tree dump.
-constexpr size_t OUTPUT_BUF_SIZE{8192};
+constexpr size_t OUTPUT_BUF_SIZE{16384};
 
 // The direction of the path, which can be represented as an integer. Left
 // means 0 and right means 1.
@@ -47,7 +47,7 @@ using TreePath = std::vector<TreeDirection>;
 using TreePaths = std::map<char, TreePath>;
 
 // Huffman compression tree node to store characters with corresponsing
-// frequency or left and right nodes.
+// frequency or left and right branches.
 class TreeNode {
 	public:
 		// Constructs empty node.
@@ -78,6 +78,15 @@ class TreeNode {
 		// Make sure that buffer is big enough to store node's dump.
 		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
 
+		// Returns the character of the node.
+		constexpr char get_ch() const noexcept;
+
+		// Returns the left branch of the node.
+		constexpr const TreeNode* get_left() const noexcept;
+
+		// Returns the right branch of the node.
+		constexpr const TreeNode* get_right() const noexcept;
+
 		// Determines that node is another nodes group.
 		constexpr bool is_group() const noexcept;
 
@@ -90,6 +99,7 @@ class TreeNode {
 		// A character with a certain frequency or a random character if the left and
 		// right branches are set.
 		char ch_{'\0'};
+
 		// Character frequency or the sum of the frequencies of the left and right
 		// branches. Frequency can be zero only when loading a dump, since the
 		// frequency is only needed to form a tree.
@@ -123,6 +133,9 @@ class Tree {
 		//
 		// Make sure that buffer is big enough to store node's dump.
 		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
+
+		// Returns the root of the tree.
+		constexpr const TreeNode* get_root() const noexcept;
 
 		// Loads the tree from the passed buffer starting from passed bit index.
 		//
@@ -178,7 +191,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	tree.dump(output_buf, output_buf_bit_index);
 
 	// Get the tree paths of each character to compress these character.
-	TreePaths paths{tree.calculate_paths()};
+	TreePaths paths = tree.calculate_paths();
 
 	// Create buffer to store readed input content.
 	char input_buf[INPUT_BUF_SIZE]{};
@@ -194,7 +207,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 		// Compress and write each readed character.
 		for (auto char_index{0}; char_index < input.gcount(); ++char_index) {
 			// Get character's tree path.
-			const TreePath& path{paths[input_buf[char_index]]};
+			const TreePath& path = paths[input_buf[char_index]];
 
 			// Write path bits to the output buffer.
 			for (TreeDirection direction : path) {
@@ -207,8 +220,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 				}
 
 				// Drain the output buffer to the stream.
-				output.write(output_buf, sizeof(output_buf));
-				if (output.bad()) {
+				if (output.write(output_buf, sizeof(output_buf)).bad()) {
 					throw core::CompressorError(
 						"failed to write the part of compressed content");
 				}
@@ -220,18 +232,16 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 
 	// Try to write the leftover content of the output buffer.
 	if (output_buf_bit_index > 0) {
-		const size_t output_size =
-			output_buf_bit_index / CHAR_BIT + (output_buf_bit_index % CHAR_BIT > 0);
-		output.write(output_buf, output_size);
-		if (output.bad()) {
+		const size_t output_size{
+			output_buf_bit_index / CHAR_BIT + (output_buf_bit_index % CHAR_BIT > 0)};
+		if (output.write(output_buf, output_size).bad()) {
 			throw core::CompressorError(
 				"failed to write the last part of compressed content");
 		}
 	}
 
 	// Try to flush the output.
-	output.flush();
-	if (output.bad()) {
+	if (output.flush().bad()) {
 		throw core::CompressorError("failed to flush the output.");
 	}
 }
@@ -246,7 +256,7 @@ void HuffmanDecompressor::decompress(
 	}
 
 	// Create input buffer to store tree dump and compressed content.
-	char input_buf[OUTPUT_BUF_SIZE]{};
+	char input_buf[INPUT_BUF_SIZE]{};
 	size_t input_buf_bit_index{0};
 
 	// Read the first chunk, which contains a tree dump and some compressed
@@ -260,7 +270,64 @@ void HuffmanDecompressor::decompress(
 	Tree tree;
 	tree.load(input_buf, input_buf_bit_index);
 
-	output << "This is Huffman decompressor." << std::endl;
+	// Create output buffer to store decompressed content.
+	char output_buf[OUTPUT_BUF_SIZE]{};
+	size_t output_buf_index{0};
+
+	// Traverses the tree according to the path bits in the compressed content
+	// until it encounters a symbol in the tree. The found symbol writes to the
+	// output buffer.
+	for (size_t i{0}; i < decompressed_size; ++i) {
+		const TreeNode* dip_node = tree.get_root();
+
+		// Traverse the tree according to the path bits.
+		while (dip_node->is_group()) {
+			// Read the path bit. If it is equal to 1, then select the right branch,
+			// otherwise - the left.
+			dip_node = core::bit_get(input_buf, input_buf_bit_index) == 0b1
+				? dip_node->get_right() : dip_node->get_left();
+			++input_buf_bit_index;
+
+			// Do not read the next chunk of input if the input buffer has not run out.
+			if (input_buf_bit_index / CHAR_BIT < sizeof(input_buf)) {
+				continue;
+			}
+
+			// Read the next chunk to the input buffer.
+			input.read(input_buf, sizeof(input_buf));
+			if (input.bad() || (input.fail() && !input.eof())) {
+				throw core::CompressorError("failed to read the next input chunk");
+			}
+			input_buf_bit_index = 0;
+		}
+
+		// Write character to the output buffer.
+		output_buf[output_buf_index++] = dip_node->get_ch();
+
+		// Do not drain the output buffer if it is not full.
+		if (output_buf_index < sizeof(output_buf)) {
+			continue;
+		}
+
+		// Drain the output buffer to the stream.
+		if (output.write(output_buf, sizeof(output_buf)).bad()) {
+			throw core::CompressorError(
+				"failed to write the part of decompressed content");
+		}
+		std::ranges::fill(output_buf, 0);
+		output_buf_index = 0;
+	}
+
+	// Try to write the leftover content of the output buffer.
+	if (output_buf_index > 0 && output.write(output_buf, output_buf_index).bad()) {
+		throw core::CompressorError(
+			"failed to write the last part of compressed content");
+	}
+
+	// Try to flush the output.
+	if (output.flush().bad()) {
+		throw core::CompressorError("failed to flush the output.");
+	}
 }
 
 constexpr TreeNode::TreeNode(const char ch, const uint64_t freq) noexcept
@@ -333,6 +400,18 @@ constexpr void TreeNode::dump(
 	}
 }
 
+constexpr char TreeNode::get_ch() const noexcept {
+	return ch_;
+}
+
+constexpr const TreeNode* TreeNode::get_left() const noexcept {
+	return left_;
+}
+
+constexpr const TreeNode* TreeNode::get_right() const noexcept {
+	return right_;
+}
+
 constexpr bool TreeNode::is_group() const noexcept {
 	// There is no need to check right node against `nullptr` because a grouping
 	// node has either 0 branches or both.
@@ -360,10 +439,12 @@ constexpr void TreeNode::load(
 		right_ = new TreeNode;
 		right_->load(buf, bit_index);
 	} else {
+		// Shift bit index to load the character.
+		++bit_index;
+
 		// Set `nullptr` to branches because new node is character node.
 		left_ = nullptr;
 		right_ = nullptr;
-
 		// Read character and shift by readed bits.
 		ch_ = core::bit_read_char(buf, bit_index);
 		bit_index += CHAR_BIT;
@@ -371,22 +452,20 @@ constexpr void TreeNode::load(
 }
 
 Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
-	// Character nodes to store frequencies greater than 0.
-	std::vector<TreeNode*> nodes;
 	// Create character nodes with corresponding frequencies greater than 0.
+	std::vector<TreeNode*> nodes;
 	for (const auto& [ch, count] : freq_counter) {
 		nodes.push_back(new TreeNode{ch, count});
 	}
-
 	// Build a tree of nodes. The most frequent nodes have the shortest path.
 	while (nodes.size() > 1) {
 		// Sort nodes by frequency descending.
 		std::ranges::sort(nodes, core::LessPtr<TreeNode>{});
 
 		// Group the last two elements into a grouping node.
-		TreeNode* const right{nodes.back()};
+		TreeNode* const right = nodes.back();
 		nodes.pop_back();
-		TreeNode* const left{nodes.back()};
+		TreeNode* const left = nodes.back();
 		nodes.pop_back();
 		nodes.push_back(new TreeNode{left, right});
 	}
@@ -415,6 +494,10 @@ constexpr void Tree::dump(char* const buf, size_t& bit_index) const noexcept {
 	if (nullptr != root_) {
 		root_->dump(buf, bit_index);
 	}
+}
+
+constexpr const TreeNode* Tree::get_root() const noexcept {
+	return root_;
 }
 
 constexpr void Tree::load(const char* const buf, size_t& bit_index) noexcept {
