@@ -10,18 +10,18 @@ Lossless:
 
 # Installation
 
+Building system is [CMake](https://en.wikipedia.org/wiki/CMake).
+
 ### Release dependencies
 
-Building system —  [CMake](https://en.wikipedia.org/wiki/CMake).
-GUI —  [Qt 6](https://www.qt.io/product/qt6).
+- GUI —  [Qt 6](https://www.qt.io/product/qt6).
 
 ### Debug dependencies
 
-Building system —  [CMake](https://en.wikipedia.org/wiki/CMake).
-GUI —  [Qt 6](https://www.qt.io/product/qt6).
-Testing library —  [Google Test](https://en.wikipedia.org/wiki/Google_Test).
-Undefined behavior sanitizer —  [ubsan](https://github.com/gcc-mirror/gcc/tree/master/libsanitizer/ubsan).
-Address sanitizer —  [asan](https://github.com/gcc-mirror/gcc/tree/master/libsanitizer/asan).
+- GUI —  [Qt 6](https://www.qt.io/product/qt6).
+- Testing library —  [Google Test](https://en.wikipedia.org/wiki/Google_Test).
+- Undefined behavior sanitizer —  [ubsan](https://github.com/gcc-mirror/gcc/tree/master/libsanitizer/ubsan).
+- Address sanitizer —  [asan](https://github.com/gcc-mirror/gcc/tree/master/libsanitizer/asan).
 
 ### Development build
 
