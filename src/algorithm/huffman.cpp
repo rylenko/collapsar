@@ -246,6 +246,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	}
 }
 
+// TODO: Make more readable, split into small functions.
 void HuffmanDecompressor::decompress(
 		std::istream& input, std::ostream& output) {
 	// Read decompressed content size.
@@ -319,7 +320,8 @@ void HuffmanDecompressor::decompress(
 	}
 
 	// Try to write the leftover content of the output buffer.
-	if (output_buf_index > 0 && output.write(output_buf, output_buf_index).bad()) {
+	if (output_buf_index > 0
+			&& output.write(output_buf, output_buf_index).bad()) {
 		throw core::CompressorError(
 			"failed to write the last part of compressed content");
 	}
