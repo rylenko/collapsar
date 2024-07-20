@@ -33,8 +33,7 @@ constexpr size_t INPUT_BUF_SIZE{16384};
 // Note that the buffer size must be large enough to contain a tree dump.
 constexpr size_t OUTPUT_BUF_SIZE{16384};
 
-// The direction of the path, which can be represented as an integer. Left
-// means 0 and right means 1.
+// The direction of the path.
 enum class TreeDirection {
 	Left,
 	Right,
@@ -47,7 +46,7 @@ using TreePath = std::vector<TreeDirection>;
 using TreePaths = std::map<char, TreePath>;
 
 // Huffman compression tree node to store characters with corresponsing
-// frequency or left and right branches.
+// frequency and left and right branches.
 class TreeNode {
 	public:
 		// Constructs empty node.
