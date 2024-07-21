@@ -16,10 +16,10 @@ SendFilesWidget::SendFilesWidget(
 		QStackedWidget* const stacked_widget, QWidget* parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create grid layout and set it to the widget.
-	QGridLayout* const layout = new QGridLayout{this};
+	QLayout* const layout = new QGridLayout{this};
 	setLayout(layout);
 
-	// Add other widgets.
+	// Create widgets.
 	create_file_names_browser_(layout);
 	create_file_dialog_button_(layout);
 	create_back_button_(layout);

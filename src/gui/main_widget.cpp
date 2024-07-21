@@ -2,7 +2,7 @@
 
 #include <QCoreApplication>
 #include <QFont>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QLayout>
 #include <QPushButton>
 #include <QStackedWidget>
@@ -17,7 +17,7 @@ MainWidget::MainWidget(
 		QStackedWidget* const stacked_widget, QWidget* const parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create grid layout and set it to the widget.
-	QVBoxLayout* const layout = new QVBoxLayout{this};
+	QLayout* const layout = new QGridLayout{this};
 	setLayout(layout);
 
 	// Add widget and quit buttons.

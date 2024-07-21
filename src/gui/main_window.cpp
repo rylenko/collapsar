@@ -24,7 +24,7 @@ QStackedWidget* MainWindow::create_stacked_widget() {
 	QStackedWidget* const stacked_widget = new QStackedWidget{this};
 	stacked_widget->addWidget(new MainWidget{stacked_widget, this});
 	stacked_widget->addWidget(new SendFilesWidget{stacked_widget, this});
-	stacked_widget->addWidget(new ReceiveFilesWidget{this});
+	stacked_widget->addWidget(new ReceiveFilesWidget{stacked_widget, this});
 
 	return stacked_widget;
 }
