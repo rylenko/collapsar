@@ -22,7 +22,7 @@ MainWidget::MainWidget(QWidget* parent): QWidget{parent} {
 
 	// Create file dialog button.
 	QPushButton* const file_dialog_button =
-		new QPushButton{tr("Select files"), this};
+		new QPushButton{tr("&Select files"), this};
 	connect(
 		file_dialog_button,
 		&QPushButton::clicked,
@@ -31,16 +31,16 @@ MainWidget::MainWidget(QWidget* parent): QWidget{parent} {
 	);
 	layout->addWidget(file_dialog_button, 1, 0);
 
-	// Create exit button.
-	QPushButton* const exit_button = new QPushButton{tr("Exit"), this};
+	// Create quit button.
+	QPushButton* const quit_button = new QPushButton{tr("&Quit"), this};
 	connect(
-		exit_button,
+		quit_button,
 		&QPushButton::clicked,
 		this,
 		&QCoreApplication::quit,
 		Qt::QueuedConnection
 	);
-	layout->addWidget(exit_button, 1, 1);
+	layout->addWidget(quit_button, 1, 1);
 }
 
 void MainWidget::handle_file_dialog_button_() {
