@@ -3,15 +3,30 @@
 #include <QColor>
 #include <QMainWindow>
 #include <QPalette>
+#include <QStackedWidget>
 
 #include "gui/main_widget.h"
+#include "gui/receive_files_widget.h"
+#include "gui/send_files_widget.h"
 
 namespace gui {
 
 MainWindow::MainWindow(QWidget* parent): QMainWindow{parent} {
-	setCentralWidget(new gui::MainWidget{this});
+	// Create stacked widget and make it central.
+	setCentralWidget(create_stacked_widget());
+	// Set title.
 	setWindowTitle(tr("Collapsar"));
+	// Set theme.
 	set_dark_theme_();
+}
+
+QStackedWidget* MainWindow::create_stacked_widget() {
+	QStackedWidget* const stacked_widget = new QStackedWidget{this};
+	stacked_widget->addWidget(new MainWidget{stacked_widget, this});
+	stacked_widget->addWidget(new SendFilesWidget{stacked_widget, this});
+	stacked_widget->addWidget(new ReceiveFilesWidget{this});
+
+	return stacked_widget;
 }
 
 void MainWindow::set_dark_theme_() {

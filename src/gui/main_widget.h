@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QLayout>
-#include <QTextBrowser>
+#include <QStackedWidget>
 #include <QWidget>
 
 namespace gui {
@@ -10,19 +10,22 @@ class MainWidget: public QWidget {
 	Q_OBJECT
 
 	public:
-		explicit MainWidget(QWidget* parent = nullptr);
+		MainWidget(QStackedWidget* stacked_widget, QWidget* parent = nullptr);
 
 	private slots:
-		void handle_file_dialog_button_();
+		void handle_receive_files_button_();
+		void handle_send_files_button_();
 
 	private:
 		constexpr static unsigned int FONT_SIZE_{13};
 
-		void create_file_dialog_button_(QLayout* layout);
-		void create_file_names_browser_(QLayout* layout);
+		// Methods to create main widget elements.
+		void create_send_files_button_(QLayout* layout);
+		void create_receive_files_button_(QLayout* layout);
 		void create_quit_button_(QLayout* layout);
 
-		QTextBrowser* file_names_browser_;
+		// Stacked widgets.
+		QStackedWidget* const stacked_widget_;
 };
 
 }  // namespace gui
