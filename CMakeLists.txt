@@ -30,6 +30,7 @@ qt_add_executable(${PROJECT_NAME}
 	src/algorithm/decompressor_factory.cpp
 	src/algorithm/huffman.cpp
 	src/core/freq_counter.cpp
+	src/gui/main_widget.cpp
 	src/gui/main_window.cpp
 	src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
