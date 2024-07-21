@@ -3,7 +3,9 @@
 #include <Qt>
 #include <QCoreApplication>
 #include <QFileDialog>
+#include <QFont>
 #include <QGridLayout>
+#include <QLayout>
 #include <QPushButton>
 #include <QStringList>
 #include <QWidget>
@@ -15,32 +17,67 @@ MainWidget::MainWidget(QWidget* parent): QWidget{parent} {
 	QGridLayout* const layout = new QGridLayout{this};
 	setLayout(layout);
 
-	// Create file names browser.
-	file_names_browser_ = new QTextBrowser{this};
-	file_names_browser_->setText(tr("The file names will be here..."));
-	layout->addWidget(file_names_browser_, 0, 0, 1, 2);
+	// Add other widgets.
+	create_file_names_browser_(layout);
+	create_file_dialog_button_(layout);
+	create_quit_button_(layout);
+}
 
-	// Create file dialog button.
-	QPushButton* const file_dialog_button =
-		new QPushButton{tr("&Select files"), this};
+void MainWidget::create_file_dialog_button_(QLayout* const layout) {
+	// Create button.
+	QPushButton* const button = new QPushButton{tr("&Select files"), this};
+
+	// Change font size.
+	QFont font = button->font();
+	font.setPointSize(FONT_SIZE_);
+	button->setFont(font);
+
+	// Add button to the layout.
+	layout->addWidget(button);
+
+	// Connect button to the handler.
 	connect(
-		file_dialog_button,
+		button,
 		&QPushButton::clicked,
 		this,
-		&MainWidget::handle_file_dialog_button_
-	);
-	layout->addWidget(file_dialog_button, 1, 0);
+		&MainWidget::handle_file_dialog_button_);
+}
 
-	// Create quit button.
-	QPushButton* const quit_button = new QPushButton{tr("&Quit"), this};
+void MainWidget::create_file_names_browser_(QLayout* const layout) {
+	// Create text browser.
+	file_names_browser_ = new QTextBrowser{this};
+
+	// Set placeholder.
+	file_names_browser_->setText(tr("The file names will be here..."));
+
+	// Change font size.
+	QFont font = file_names_browser_->font();
+	font.setPointSize(FONT_SIZE_);
+	file_names_browser_->setFont(font);
+
+	// Add widget to the layout.
+	layout->addWidget(file_names_browser_);
+}
+
+void MainWidget::create_quit_button_(QLayout* const layout) {
+	// Create button.
+	QPushButton* const button = new QPushButton{tr("&Quit"), this};
+
+	// Change font size.
+	QFont font = button->font();
+	font.setPointSize(FONT_SIZE_);
+	button->setFont(font);
+
+	// Add button to the layout.
+	layout->addWidget(button);
+
+	// Connect button to the handler.
 	connect(
-		quit_button,
+		button,
 		&QPushButton::clicked,
 		this,
 		&QCoreApplication::quit,
-		Qt::QueuedConnection
-	);
-	layout->addWidget(quit_button, 1, 1);
+		Qt::QueuedConnection);
 }
 
 void MainWidget::handle_file_dialog_button_() {
