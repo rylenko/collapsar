@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QFont>
 #include <QGridLayout>
+#include <QIntValidator>
 #include <QLayout>
 #include <QLineEdit>
 #include <QPushButton>
@@ -12,6 +13,7 @@
 #include <QWidget>
 
 #include "gui/font.h"
+#include "gui/port_validator.h"
 
 namespace gui {
 
@@ -72,9 +74,11 @@ void SendFilesWidget::create_host_input_(QLayout* const layout) {
 }
 
 void SendFilesWidget::create_port_input_(QLayout* const layout) {
-	// Create input, set placeholder, set font and add input to the layout.
+	// Create input, set placeholder, set validator, set font and add input to the
+	// layout.
 	QLineEdit* const input = new QLineEdit{this};
 	input->setPlaceholderText(tr("Input receiver's port..."));
+	input->setValidator(new PortValidator{this});
 	set_font(input);
 	layout->addWidget(input);
 }

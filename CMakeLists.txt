@@ -33,6 +33,7 @@ qt_add_executable(${PROJECT_NAME}
 	src/gui/font.cpp
 	src/gui/main_widget.cpp
 	src/gui/main_window.cpp
+	src/gui/port_validator.cpp
 	src/gui/receive_files_widget.cpp
 	src/gui/send_files_widget.cpp
 	src/main.cpp)
