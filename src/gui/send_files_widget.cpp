@@ -5,10 +5,13 @@
 #include <QFont>
 #include <QGridLayout>
 #include <QLayout>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QStringList>
 #include <QWidget>
+
+#include "gui/font.h"
 
 namespace gui {
 
@@ -20,21 +23,17 @@ SendFilesWidget::SendFilesWidget(
 	setLayout(layout);
 
 	// Create widgets.
+	create_host_input_(layout);
+	create_port_input_(layout);
 	create_file_names_browser_(layout);
 	create_file_dialog_button_(layout);
 	create_back_button_(layout);
 }
 
 void SendFilesWidget::create_back_button_(QLayout* const layout) {
-	// Create button.
+	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Back"), this};
-
-	// Change font size.
-	QFont font = button->font();
-	font.setPointSize(FONT_SIZE_);
-	button->setFont(font);
-
-	// Add button to the layout.
+	set_font(button);
 	layout->addWidget(button);
 
 	// Connect button to the handler.
@@ -43,15 +42,9 @@ void SendFilesWidget::create_back_button_(QLayout* const layout) {
 }
 
 void SendFilesWidget::create_file_dialog_button_(QLayout* const layout) {
-	// Create button.
+	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Select files"), this};
-
-	// Change font size.
-	QFont font = button->font();
-	font.setPointSize(FONT_SIZE_);
-	button->setFont(font);
-
-	// Add button to the layout.
+	set_font(button);
 	layout->addWidget(button);
 
 	// Connect button to the handler.
@@ -63,19 +56,27 @@ void SendFilesWidget::create_file_dialog_button_(QLayout* const layout) {
 }
 
 void SendFilesWidget::create_file_names_browser_(QLayout* const layout) {
-	// Create text browser.
+	// Create browser, set font to it and add it to the layout.
 	file_names_browser_ = new QTextBrowser{this};
-
-	// Set placeholder.
 	file_names_browser_->setText(tr("The file names will be here..."));
-
-	// Change font size.
-	QFont font = file_names_browser_->font();
-	font.setPointSize(FONT_SIZE_);
-	file_names_browser_->setFont(font);
-
-	// Add widget to the layout.
+	set_font(file_names_browser_);
 	layout->addWidget(file_names_browser_);
+}
+
+void SendFilesWidget::create_host_input_(QLayout* const layout) {
+	// Create input, set placeholder, set font and add input to the layout.
+	QLineEdit* const input = new QLineEdit{this};
+	input->setPlaceholderText(tr("Input receiver's host..."));
+	set_font(input);
+	layout->addWidget(input);
+}
+
+void SendFilesWidget::create_port_input_(QLayout* const layout) {
+	// Create input, set placeholder, set font and add input to the layout.
+	QLineEdit* const input = new QLineEdit{this};
+	input->setPlaceholderText(tr("Input receiver's port..."));
+	set_font(input);
+	layout->addWidget(input);
 }
 
 void SendFilesWidget::handle_back_button_() {
@@ -87,10 +88,11 @@ void SendFilesWidget::handle_file_dialog_button_() {
 	QStringList file_names =
 		QFileDialog::getOpenFileNames(this, tr("Select one or more files"));
 
-	// Update file names browser.
+	// Reset content of the browser if some files selected.
 	if (!file_names.empty()) {
 		file_names_browser_->setText("");
 	}
+	// Append selected filenames to the browser.
 	for (const auto& file_name : file_names) {
 		file_names_browser_->append(file_name);
 	}

@@ -39,6 +39,7 @@ void MainWindow::set_dark_theme_() {
 	palette.setColor(QPalette::ToolTipBase, Qt::white);
 	palette.setColor(QPalette::ToolTipText, Qt::white);
 	palette.setColor(QPalette::Text, Qt::white);
+	palette.setColor(QPalette::PlaceholderText, Qt::gray);
 	palette.setColor(QPalette::Button, QColor(53, 53, 53));
 	palette.setColor(QPalette::ButtonText, Qt::white);
 	palette.setColor(QPalette::BrightText, Qt::red);

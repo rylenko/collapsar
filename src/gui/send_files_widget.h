@@ -18,11 +18,11 @@ class SendFilesWidget: public QWidget {
 		void handle_file_dialog_button_();
 
 	private:
-		constexpr static unsigned int FONT_SIZE_{13};
-
 		void create_back_button_(QLayout* layout);
 		void create_file_dialog_button_(QLayout* layout);
 		void create_file_names_browser_(QLayout* layout);
+		void create_host_input_(QLayout* layout);
+		void create_port_input_(QLayout* layout);
 
 		QStackedWidget* const stacked_widget_;
 		QTextBrowser* file_names_browser_;

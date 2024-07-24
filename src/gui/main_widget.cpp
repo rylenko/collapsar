@@ -8,6 +8,7 @@
 #include <QStackedWidget>
 #include <QWidget>
 
+#include "gui/font.h"
 #include "gui/receive_files_widget.h"
 #include "gui/send_files_widget.h"
 
@@ -27,15 +28,9 @@ MainWidget::MainWidget(
 }
 
 void MainWidget::create_receive_files_button_(QLayout* const layout) {
-	// Create button.
+	// Create button, add font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Receive files"), this};
-
-	// Change font size.
-	QFont font = button->font();
-	font.setPointSize(FONT_SIZE_);
-	button->setFont(font);
-
-	// Add button to the layout.
+	set_font(button);
 	layout->addWidget(button);
 
 	// Connect button to the handler.
@@ -47,15 +42,9 @@ void MainWidget::create_receive_files_button_(QLayout* const layout) {
 }
 
 void MainWidget::create_send_files_button_(QLayout* const layout) {
-	// Create button.
+	// Create button, add font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Send files"), this};
-
-	// Change font size.
-	QFont font = button->font();
-	font.setPointSize(FONT_SIZE_);
-	button->setFont(font);
-
-	// Add button to the layout.
+	set_font(button);
 	layout->addWidget(button);
 
 	// Connect button to the handler.
@@ -67,15 +56,9 @@ void MainWidget::create_send_files_button_(QLayout* const layout) {
 }
 
 void MainWidget::create_quit_button_(QLayout* const layout) {
-	// Create button.
+	// Update button font and add button to the layout.
 	QPushButton* const button = new QPushButton{tr("&Quit"), this};
-
-	// Change font size.
-	QFont font = button->font();
-	font.setPointSize(FONT_SIZE_);
-	button->setFont(font);
-
-	// Add button to the layout.
+	set_font(button);
 	layout->addWidget(button);
 
 	// Connect button to the handler.

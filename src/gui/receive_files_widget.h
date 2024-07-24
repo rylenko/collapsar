@@ -15,8 +15,6 @@ class ReceiveFilesWidget: public QWidget {
 		void handle_back_button_();
 
 	private:
-		constexpr static unsigned int FONT_SIZE_{13};
-
 		void create_back_button_(QLayout* layout);
 
 		QStackedWidget* const stacked_widget_;

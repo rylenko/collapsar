@@ -17,8 +17,6 @@ class MainWidget: public QWidget {
 		void handle_send_files_button_();
 
 	private:
-		constexpr static unsigned int FONT_SIZE_{13};
-
 		// Methods to create main widget elements.
 		void create_send_files_button_(QLayout* layout);
 		void create_receive_files_button_(QLayout* layout);

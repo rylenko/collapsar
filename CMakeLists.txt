@@ -30,6 +30,7 @@ qt_add_executable(${PROJECT_NAME}
 	src/algorithm/decompressor_factory.cpp
 	src/algorithm/huffman.cpp
 	src/core/freq_counter.cpp
+	src/gui/font.cpp
 	src/gui/main_widget.cpp
 	src/gui/main_window.cpp
 	src/gui/receive_files_widget.cpp

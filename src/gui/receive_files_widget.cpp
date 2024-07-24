@@ -8,6 +8,8 @@
 #include <QStackedWidget>
 #include <QWidget>
 
+#include "gui/font.h"
+
 namespace gui {
 
 ReceiveFilesWidget::ReceiveFilesWidget(
@@ -20,9 +22,7 @@ ReceiveFilesWidget::ReceiveFilesWidget(
 	// Create label and change its font size.
 	QLabel* const label = new QLabel{this};
 	label->setText(tr("Receiving files widget."));
-	QFont font = label->font();
-	font.setPointSize(FONT_SIZE_);
-	label->setFont(font);
+	set_font(label);
 	layout->addWidget(label);
 
 	// Create widgets.
@@ -30,15 +30,9 @@ ReceiveFilesWidget::ReceiveFilesWidget(
 }
 
 void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
-	// Create button.
+	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Back"), this};
-
-	// Change font size.
-	QFont font = button->font();
-	font.setPointSize(FONT_SIZE_);
-	button->setFont(font);
-
-	// Add button to the layout.
+	set_font(button);
 	layout->addWidget(button);
 
 	// Connect button to the handler.
