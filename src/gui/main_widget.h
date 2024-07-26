@@ -18,6 +18,7 @@ class MainWidget: public QWidget {
 
 	private:
 		// Methods to create main widget elements.
+		void create_title_(QLayout* layout);
 		void create_send_files_button_(QLayout* layout);
 		void create_receive_files_button_(QLayout* layout);
 		void create_quit_button_(QLayout* layout);

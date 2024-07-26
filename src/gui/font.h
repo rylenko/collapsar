@@ -4,6 +4,11 @@
 
 namespace gui {
 
-void set_font(QWidget* widget);
+enum class FontSize {
+	Regular = 13,
+	Title = 25,
+};
+
+void set_font(QWidget* widget, FontSize size = FontSize::Regular);
 
 }

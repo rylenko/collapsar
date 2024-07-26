@@ -17,7 +17,6 @@ ReceiveFilesWidget::ReceiveFilesWidget(
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create grid layout and set it to the widget.
 	QLayout* const layout = new QGridLayout{this};
-	setLayout(layout);
 
 	// Create label and change its font size.
 	QLabel* const label = new QLabel{this};

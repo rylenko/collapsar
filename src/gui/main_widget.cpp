@@ -2,10 +2,12 @@
 
 #include <QCoreApplication>
 #include <QFont>
-#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QLayout>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QVBoxLayout>
 #include <QWidget>
 
 #include "gui/font.h"
@@ -17,32 +19,33 @@ namespace gui {
 MainWidget::MainWidget(
 		QStackedWidget* const stacked_widget, QWidget* const parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
-	// Create grid layout and set it to the widget.
-	QLayout* const layout = new QGridLayout{this};
-	setLayout(layout);
+	// Create main layout.
+	QVBoxLayout* const layout = new QVBoxLayout{this};
 
-	// Add widget and quit buttons.
-	create_send_files_button_(layout);
-	create_receive_files_button_(layout);
-	create_quit_button_(layout);
+	// Add title to main layout.
+	create_title_(layout);
+
+	// Create buttons layout and add buttons to it.
+	QLayout* const buttons_layout = new QHBoxLayout;
+	create_send_files_button_(buttons_layout);
+	create_receive_files_button_(buttons_layout);
+	create_quit_button_(buttons_layout);
+
+	// Add buttons layout to main layout.
+	layout->addLayout(buttons_layout);
 }
 
-void MainWidget::create_receive_files_button_(QLayout* const layout) {
-	// Create button, add font to it and add it to the layout.
-	QPushButton* const button = new QPushButton{tr("&Receive files"), this};
-	set_font(button);
-	layout->addWidget(button);
-
-	// Connect button to the handler.
-	connect(
-		button,
-		&QPushButton::clicked,
-		this,
-		&MainWidget::handle_receive_files_button_);
+void MainWidget::create_title_(QLayout* const layout) {
+	// Create title, align it, set text with font and add title to the layout.
+	QLabel* const title = new QLabel{this};
+	title->setAlignment(Qt::AlignCenter);
+	title->setText(tr("🎇 Collapsar"));
+	set_font(title, FontSize::Title);
+	layout->addWidget(title);
 }
 
 void MainWidget::create_send_files_button_(QLayout* const layout) {
-	// Create button, add font to it and add it to the layout.
+	// Create button, add font and add button to the layout.
 	QPushButton* const button = new QPushButton{tr("&Send files"), this};
 	set_font(button);
 	layout->addWidget(button);
@@ -55,8 +58,22 @@ void MainWidget::create_send_files_button_(QLayout* const layout) {
 		&MainWidget::handle_send_files_button_);
 }
 
+void MainWidget::create_receive_files_button_(QLayout* const layout) {
+	// Create button, add font and add button to the layout.
+	QPushButton* const button = new QPushButton{tr("&Receive files"), this};
+	set_font(button);
+	layout->addWidget(button);
+
+	// Connect button to the handler.
+	connect(
+		button,
+		&QPushButton::clicked,
+		this,
+		&MainWidget::handle_receive_files_button_);
+}
+
 void MainWidget::create_quit_button_(QLayout* const layout) {
-	// Update button font and add button to the layout.
+	// Create button, add font and add button to the layout.
 	QPushButton* const button = new QPushButton{tr("&Quit"), this};
 	set_font(button);
 	layout->addWidget(button);

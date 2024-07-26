@@ -22,7 +22,6 @@ SendFilesWidget::SendFilesWidget(
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create grid layout and set it to the widget.
 	QLayout* const layout = new QGridLayout{this};
-	setLayout(layout);
 
 	// Create widgets.
 	create_host_input_(layout);

@@ -5,11 +5,9 @@
 
 namespace gui {
 
-constexpr unsigned int FONT_SIZE{13};
-
-void set_font(QWidget* const widget) {
+void set_font(QWidget* const widget, const FontSize size) {
 	QFont font = widget->font();
-	font.setPointSize(FONT_SIZE);
+	font.setPointSize(static_cast<int>(size));
 	widget->setFont(font);
 }
 
