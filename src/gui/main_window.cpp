@@ -1,3 +1,5 @@
+// TODO: Doc stacked widget, add enum Page::Main, Page::SendFiles, Page::ReceiveFiles
+
 #include "gui/main_window.h"
 
 #include <QColor>
@@ -5,25 +7,30 @@
 #include <QPalette>
 #include <QStackedWidget>
 
+#include "core/compressor_factory.h"
 #include "gui/main_widget.h"
 #include "gui/receive_files_widget.h"
 #include "gui/send_files_widget.h"
 
 namespace gui {
 
-MainWindow::MainWindow(QWidget* parent): QMainWindow{parent} {
+MainWindow::MainWindow(
+		core::CompressorFactory* const compressor_factory, QWidget* parent)
+		: QMainWindow{parent} {
 	// Create stacked widget and make it central.
-	setCentralWidget(create_stacked_widget());
+	setCentralWidget(create_stacked_widget(compressor_factory));
 	// Set title.
 	setWindowTitle(tr("Collapsar"));
 	// Set theme.
 	set_dark_theme_();
 }
 
-QStackedWidget* MainWindow::create_stacked_widget() {
+QStackedWidget* MainWindow::create_stacked_widget(
+		core::CompressorFactory* const compressor_factory) {
 	QStackedWidget* const stacked_widget = new QStackedWidget{this};
 	stacked_widget->addWidget(new MainWidget{stacked_widget, this});
-	stacked_widget->addWidget(new SendFilesWidget{stacked_widget, this});
+	stacked_widget->addWidget(
+		new SendFilesWidget{stacked_widget, compressor_factory, this});
 	stacked_widget->addWidget(new ReceiveFilesWidget{stacked_widget, this});
 
 	return stacked_widget;

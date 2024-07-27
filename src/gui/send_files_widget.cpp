@@ -1,31 +1,37 @@
 #include "gui/send_files_widget.h"
 
+#include <QComboBox>
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QFont>
-#include <QGridLayout>
 #include <QIntValidator>
+#include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QStringList>
+#include <QVBoxLayout>
 #include <QWidget>
 
+#include "core/compressor_factory.h"
 #include "gui/font.h"
 #include "gui/port_validator.h"
 
 namespace gui {
 
 SendFilesWidget::SendFilesWidget(
-		QStackedWidget* const stacked_widget, QWidget* parent)
+		QStackedWidget* const stacked_widget,
+		core::CompressorFactory* const compressor_factory,
+		QWidget* parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create grid layout and set it to the widget.
-	QLayout* const layout = new QGridLayout{this};
+	QLayout* const layout = new QVBoxLayout{this};
 
 	// Create widgets.
 	create_host_input_(layout);
 	create_port_input_(layout);
+	create_algorithm_choice_(layout, compressor_factory);
 	create_file_names_browser_(layout);
 	create_file_dialog_button_(layout);
 	create_back_button_(layout);
@@ -48,6 +54,23 @@ void SendFilesWidget::handle_file_dialog_button_() {
 	for (const auto& file_name : file_names) {
 		file_names_browser_->append(file_name);
 	}
+}
+
+void SendFilesWidget::create_algorithm_choice_(
+		QLayout* const layout, core::CompressorFactory* const compressor_factory) {
+	// Create and add combo box title, set font to it and add to the layout.
+	QLabel* const label = new QLabel{this};
+	label->setText(tr("Select the algorithm:"));
+	set_font(label);
+	layout->addWidget(label);
+
+	// Create and fill combo box, set font to it and add to the layout.
+	QComboBox* const box = new QComboBox{this};
+	for (auto name : compressor_factory->get_names()) {
+		box->addItem(name.data());
+	}
+	set_font(box);
+	layout->addWidget(box);
 }
 
 void SendFilesWidget::create_back_button_(QLayout* const layout) {
