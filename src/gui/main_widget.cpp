@@ -44,6 +44,14 @@ void MainWidget::resizeEvent(QResizeEvent* event) {
 	adjust_margins_();
 }
 
+void MainWidget::handle_send_files_button_() {
+	stacked_widget_->setCurrentIndex(1);
+}
+
+void MainWidget::handle_receive_files_button_() {
+	stacked_widget_->setCurrentIndex(2);
+}
+
 void MainWidget::adjust_margins_() {
 	// Calculate width and height margins.
 	int width_margins = width() * 0.25;
@@ -104,14 +112,6 @@ void MainWidget::create_quit_button_(QLayout* const layout) {
 		this,
 		&QCoreApplication::quit,
 		Qt::QueuedConnection);
-}
-
-void MainWidget::handle_send_files_button_() {
-	stacked_widget_->setCurrentIndex(1);
-}
-
-void MainWidget::handle_receive_files_button_() {
-	stacked_widget_->setCurrentIndex(2);
 }
 
 }  // namespace gui

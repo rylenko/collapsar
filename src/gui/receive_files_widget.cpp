@@ -28,6 +28,10 @@ ReceiveFilesWidget::ReceiveFilesWidget(
 	create_back_button_(layout);
 }
 
+void ReceiveFilesWidget::handle_back_button_() {
+	stacked_widget_->setCurrentIndex(0);
+}
+
 void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
 	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Back"), this};
@@ -40,10 +44,6 @@ void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
 		&QPushButton::clicked,
 		this,
 		&ReceiveFilesWidget::handle_back_button_);
-}
-
-void ReceiveFilesWidget::handle_back_button_() {
-	stacked_widget_->setCurrentIndex(0);
 }
 
 }  // namespace gui

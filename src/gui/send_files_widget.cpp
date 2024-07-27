@@ -31,6 +31,25 @@ SendFilesWidget::SendFilesWidget(
 	create_back_button_(layout);
 }
 
+void SendFilesWidget::handle_back_button_() {
+	stacked_widget_->setCurrentIndex(0);
+}
+
+void SendFilesWidget::handle_file_dialog_button_() {
+	// Open file dialog to select file names.
+	QStringList file_names =
+		QFileDialog::getOpenFileNames(this, tr("Select one or more files"));
+
+	// Reset content of the browser if some files selected.
+	if (!file_names.empty()) {
+		file_names_browser_->setText("");
+	}
+	// Append selected filenames to the browser.
+	for (const auto& file_name : file_names) {
+		file_names_browser_->append(file_name);
+	}
+}
+
 void SendFilesWidget::create_back_button_(QLayout* const layout) {
 	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Back"), this};
@@ -80,25 +99,6 @@ void SendFilesWidget::create_port_input_(QLayout* const layout) {
 	input->setValidator(new PortValidator{this});
 	set_font(input);
 	layout->addWidget(input);
-}
-
-void SendFilesWidget::handle_back_button_() {
-	stacked_widget_->setCurrentIndex(0);
-}
-
-void SendFilesWidget::handle_file_dialog_button_() {
-	// Open file dialog to select file names.
-	QStringList file_names =
-		QFileDialog::getOpenFileNames(this, tr("Select one or more files"));
-
-	// Reset content of the browser if some files selected.
-	if (!file_names.empty()) {
-		file_names_browser_->setText("");
-	}
-	// Append selected filenames to the browser.
-	for (const auto& file_name : file_names) {
-		file_names_browser_->append(file_name);
-	}
 }
 
 }  // namespace gui
