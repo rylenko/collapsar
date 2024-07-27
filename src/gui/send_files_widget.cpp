@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QFont>
+#include <QFormLayout>
 #include <QIntValidator>
 #include <QLabel>
 #include <QLayout>
@@ -11,7 +12,6 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QStringList>
-#include <QVBoxLayout>
 #include <QWidget>
 
 #include "core/compressor_factory.h"
@@ -26,7 +26,7 @@ SendFilesWidget::SendFilesWidget(
 		QWidget* parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create grid layout and set it to the widget.
-	QLayout* const layout = new QVBoxLayout{this};
+	QFormLayout* const layout = new QFormLayout{this};
 
 	// Create widgets.
 	create_host_input_(layout);
@@ -57,12 +57,11 @@ void SendFilesWidget::handle_file_dialog_button_() {
 }
 
 void SendFilesWidget::create_algorithm_choice_(
-		QLayout* const layout, core::CompressorFactory* const compressor_factory) {
-	// Create and add combo box title, set font to it and add to the layout.
-	QLabel* const label = new QLabel{this};
-	label->setText(tr("Select the algorithm:"));
+		QFormLayout* const layout,
+		core::CompressorFactory* const compressor_factory) {
+	// Create combo box label and set font to it.
+	QLabel* const label = new QLabel{tr("Algorithm:"), this};
 	set_font(label);
-	layout->addWidget(label);
 
 	// Create and fill combo box, set font to it and add to the layout.
 	QComboBox* const box = new QComboBox{this};
@@ -70,7 +69,9 @@ void SendFilesWidget::create_algorithm_choice_(
 		box->addItem(name.data());
 	}
 	set_font(box);
-	layout->addWidget(box);
+
+	// Add label and combo box to the layout.
+	layout->addRow(label, box);
 }
 
 void SendFilesWidget::create_back_button_(QLayout* const layout) {
@@ -98,30 +99,46 @@ void SendFilesWidget::create_file_dialog_button_(QLayout* const layout) {
 		&SendFilesWidget::handle_file_dialog_button_);
 }
 
-void SendFilesWidget::create_file_names_browser_(QLayout* const layout) {
-	// Create browser, set font to it and add it to the layout.
+void SendFilesWidget::create_file_names_browser_(QFormLayout* const layout) {
+	// Create browser label and set font to it.
+	QLabel* const label = new QLabel{tr("Files:"), this};
+	set_font(label);
+
+	// Create browser and set font to it.
 	file_names_browser_ = new QTextBrowser{this};
-	file_names_browser_->setText(tr("The file names will be here..."));
 	set_font(file_names_browser_);
-	layout->addWidget(file_names_browser_);
+
+	// Add label and browser to the layout.
+	layout->addRow(label, file_names_browser_);
 }
 
-void SendFilesWidget::create_host_input_(QLayout* const layout) {
-	// Create input, set placeholder, set font and add input to the layout.
+void SendFilesWidget::create_host_input_(QFormLayout* const layout) {
+	// Create input label and set font to it.
+	QLabel* const label = new QLabel{tr("Host:"), this};
+	set_font(label);
+
+	// Create input, set placeholder and font.
 	QLineEdit* const input = new QLineEdit{this};
-	input->setPlaceholderText(tr("Input receiver's host..."));
+	input->setPlaceholderText(tr("255.255.255.255"));
 	set_font(input);
-	layout->addWidget(input);
+
+	// Add label and input to the layout.
+	layout->addRow(label, input);
 }
 
-void SendFilesWidget::create_port_input_(QLayout* const layout) {
-	// Create input, set placeholder, set validator, set font and add input to the
-	// layout.
+void SendFilesWidget::create_port_input_(QFormLayout* const layout) {
+	// Create input label and set font to it.
+	QLabel* const label = new QLabel{tr("Port:"), this};
+	set_font(label);
+
+	// Create input, set placeholder, validator and font.
 	QLineEdit* const input = new QLineEdit{this};
-	input->setPlaceholderText(tr("Input receiver's port..."));
+	input->setPlaceholderText(tr("8888"));
 	input->setValidator(new PortValidator{this});
 	set_font(input);
-	layout->addWidget(input);
+
+	// Add label and input to the layout.
+	layout->addRow(label, input);
 }
 
 }  // namespace gui
