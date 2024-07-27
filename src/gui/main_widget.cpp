@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
+#include <QResizeEvent>
 #include <QStackedWidget>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -33,6 +34,24 @@ MainWidget::MainWidget(
 
 	// Add buttons layout to main layout.
 	layout->addLayout(buttons_layout);
+}
+
+void MainWidget::resizeEvent(QResizeEvent* event) {
+	// Call parent method.
+	QWidget::resizeEvent(event);
+
+	// Adjust contents margins.
+	adjust_margins_();
+}
+
+void MainWidget::adjust_margins_() {
+	// Calculate width and height margins.
+	int width_margins = width() * 0.25;
+	int height_margins = height() * 0.45;
+
+	// Set margins to the main layout.
+	layout()->setContentsMargins(
+		width_margins, height_margins, width_margins, height_margins);
 }
 
 void MainWidget::create_title_(QLayout* const layout) {
