@@ -1,5 +1,4 @@
 // TODO: more constexprs, noexcepts and consts.
-// TODO: Clear comments and docs.
 // TODO: try to avoid errors, for example, with invalid dump received.
 
 #include "algorithm/huffman.h"
@@ -33,7 +32,7 @@ constexpr size_t INPUT_BUF_SIZE{16384};
 // Note that the buffer size must be large enough to contain a tree dump.
 constexpr size_t OUTPUT_BUF_SIZE{16384};
 
-// The direction of the path.
+// The direction of the tree path.
 enum class TreeDirection {
 	Left,
 	Right,
@@ -90,6 +89,8 @@ class TreeNode {
 		constexpr bool is_group() const noexcept;
 
 		// Loads a new node from the passed buffer starting from passed bit index.
+		// Note that this method does not load frequencies, since the dump does not
+		// contain them. Frequencies are just needed to build the tree.
 		//
 		// Destructs and deallocates left and right branches if exists.
 		constexpr void load(const char* buf, size_t& bit_index) noexcept;
@@ -101,7 +102,7 @@ class TreeNode {
 
 		// Character frequency or the sum of the frequencies of the left and right
 		// branches. Frequency can be zero only when loading a dump, since the
-		// frequency is only needed to form a tree.
+		// frequency is only needed to build a tree.
 		uint64_t freq_{0};
 
 		// They are either both `nullptr`, or they both point to other nodes.
@@ -128,7 +129,9 @@ class Tree {
 		// Calculate paths. So this function calculates tree path for each character.
 		TreePaths calculate_paths() const noexcept;
 
-		// Dumps the tree to the passed buffer starting from passed bit index.
+		// Dumps the tree to the passed buffer starting from passed bit index. Note
+		// that this method does not dump frequencies because they are only needed to
+		// build the tree.
 		//
 		// Make sure that buffer is big enough to store node's dump.
 		constexpr void dump(char* buf, size_t& bit_index) const noexcept;
