@@ -2,26 +2,23 @@
 
 #include <cstddef>
 
-#include <array>
 #include <memory>
 #include <stdexcept>
 #include <string_view>
+#include <vector>
 
-#include "compressor.h"
+#include "decompressor.h"
 
 namespace core {
 
 // Virtual decompressor factory.
-template <std::size_t N>
 class DecompressorFactory {
 	public:
-		// Array of names of available decompressors.
-		using Names = std::array<std::string_view, N>;
-
 		virtual ~DecompressorFactory() = default;
 
 		// Virtual method to get the array of names of available decompressors.
-		virtual constexpr const Names& get_names() const noexcept = 0;
+		virtual constexpr std::vector<std::string_view>
+			get_names() const noexcept = 0;
 
 		// Virtual method to create a decompressor using passed `name`, if one
 		// exists.

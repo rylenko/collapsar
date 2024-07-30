@@ -15,9 +15,8 @@ class CompressorFactory {
 		virtual ~CompressorFactory() = default;
 
 		// Virtual method to get the array of names of available compressors.
-		//
-		// TODO: Make it constexpr.
-		virtual std::vector<std::string_view> get_names() const noexcept = 0;
+		virtual constexpr std::vector<std::string_view>
+			get_names() const noexcept = 0;
 
 		// Virtual method to create a compressor using passed `name`, if one exists.
 		virtual std::unique_ptr<Compressor> create(std::string_view name) const = 0;

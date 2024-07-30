@@ -8,12 +8,10 @@
 
 namespace algorithm {
 
-class DecompressorFactory: public core::DecompressorFactory<2> {
+class DecompressorFactory: public core::DecompressorFactory {
 	public:
-		constexpr static Names NAMES{"no decompression", "huffman"};
-
-		constexpr const Names& get_names() const noexcept override {
-			return NAMES;
+		constexpr std::vector<std::string_view> get_names() const noexcept override {
+			return {"no decompression", "huffman"};
 		}
 
 		std::unique_ptr<core::Decompressor> create(
