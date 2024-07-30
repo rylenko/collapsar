@@ -1,21 +1,31 @@
 #include "algorithm/dummy.h"
 
-#include <algorithm>
+#include <cstddef>
+
 #include <istream>
-#include <iterator>
 #include <ostream>
+
+#include "core/compressor.h"
 
 namespace algorithm {
 
+constexpr size_t REDIRECT_BUF_SIZE{8192};
+
 void redirect_stream(std::istream& input, std::ostream& output) {
-	// Redirect input stream to the output stream.
-	std::copy(std::istreambuf_iterator<char>(input),
-		std::istreambuf_iterator<char>(),
-		std::ostreambuf_iterator<char>(output));
+	// Buffer to read from the input stream.
+	char buf[REDIRECT_BUF_SIZE];
 
-	// Handle input stream errors.
+	// Read characters from the input stream and write them to the output stream.
+	while (!input.eof()) {
+		input.read(buf, sizeof(buf));
+		if (input.bad() || (input.fail() && !input.eof())) {
+			throw core::CompressorError{"failed to read from the input stream"};
+		}
 
-	// Handle output stream errors.
+		if (output.write(buf, input.gcount()).bad()) {
+			throw core::CompressorError{"failed to write to the output stream"};
+		}
+	}
 }
 
 void DummyCompressor::compress(std::istream& input, std::ostream& output) {

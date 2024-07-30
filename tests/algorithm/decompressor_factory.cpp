@@ -9,7 +9,7 @@
 
 TEST(DecompressorFactory, Creation) {
 	// Create the factory.
-	std::unique_ptr<core::DecompressorFactory<1>> factory =
+	std::unique_ptr<core::DecompressorFactory<2>> factory =
 		std::make_unique<algorithm::DecompressorFactory>();
 
 	// Test Huffman's decompressor creation.

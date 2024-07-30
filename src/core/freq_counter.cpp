@@ -14,7 +14,7 @@ std::istream& operator>>(std::istream& stream, FreqCounter& counter) {
 
 	// Validate that EOF reached.
 	if (!stream.eof()) {
-		throw CompressorError("frequency counter did not reach EOF");
+		throw CompressorError{"frequency counter did not reach EOF"};
 	}
 	return stream;
 }

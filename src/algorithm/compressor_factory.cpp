@@ -13,14 +13,14 @@ namespace algorithm {
 
 std::unique_ptr<core::Compressor> CompressorFactory::create(
 		const std::string_view name) const {
-	if ("-" == name) {
+	if ("no compression" == name) {
 		return std::make_unique<DummyCompressor>();
 	} else if ("huffman" == name) {
 		return std::make_unique<HuffmanCompressor>();
 	}
 
-	throw core::CompressorFactoryError(
-		std::format("unknown compressor \"{}\"", name));
+	throw core::CompressorFactoryError{
+		std::format("unknown compressor \"{}\"", name)};
 }
 
 }  // namespace algorithm

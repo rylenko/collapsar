@@ -8,9 +8,9 @@
 
 namespace algorithm {
 
-class DecompressorFactory: public core::DecompressorFactory<1> {
+class DecompressorFactory: public core::DecompressorFactory<2> {
 	public:
-		constexpr static Names NAMES{"huffman"};
+		constexpr static Names NAMES{"no decompression", "huffman"};
 
 		constexpr const Names& get_names() const noexcept override {
 			return NAMES;

@@ -174,12 +174,12 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 	// Seek to the beginning of the input to read content again and apply tree
 	// paths to it.
 	if (!input.seekg(0, std::ios::beg)) {
-		throw core::CompressorError("failed to seek to the beginning of the input");
+		throw core::CompressorError{"failed to seek to the beginning of the input"};
 	}
 	// Write readed input size to the output.
 	output << freq_counter.get_total();
 	if (output.bad()) {
-		throw core::CompressorError("failed to write input's size to the output");
+		throw core::CompressorError{"failed to write input's size to the output"};
 	}
 
 	// Create output buffer to store tree dump and compressed content.
@@ -203,7 +203,7 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 		// Read input to the buffer.
 		input.read(input_buf, sizeof(input_buf));
 		if (input.bad() || (input.fail() && !input.eof())) {
-			throw core::CompressorError("failed to read from input stream");
+			throw core::CompressorError{"failed to read from input stream"};
 		}
 
 		// Compress and write each readed character.
@@ -223,8 +223,8 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 
 				// Drain the output buffer to the stream.
 				if (output.write(output_buf, sizeof(output_buf)).bad()) {
-					throw core::CompressorError(
-						"failed to write the part of compressed content");
+					throw core::CompressorError{
+						"failed to write the part of compressed content"};
 				}
 				std::ranges::fill(output_buf, 0);
 				output_buf_bit_index = 0;
@@ -237,14 +237,14 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 		const size_t output_size{
 			output_buf_bit_index / CHAR_BIT + (output_buf_bit_index % CHAR_BIT > 0)};
 		if (output.write(output_buf, output_size).bad()) {
-			throw core::CompressorError(
-				"failed to write the last part of compressed content");
+			throw core::CompressorError{
+				"failed to write the last part of compressed content"};
 		}
 	}
 
 	// Try to flush the output.
 	if (output.flush().bad()) {
-		throw core::CompressorError("failed to flush the output.");
+		throw core::CompressorError{"failed to flush the output"};
 	}
 }
 
@@ -255,7 +255,7 @@ void HuffmanDecompressor::decompress(
 	uint64_t decompressed_size;
 	input >> decompressed_size;
 	if (input.fail()) {
-		throw core::DecompressorError("failed to read decompressed content size");
+		throw core::DecompressorError{"failed to read decompressed content size"};
 	}
 
 	// Create input buffer to store tree dump and compressed content.
@@ -266,7 +266,7 @@ void HuffmanDecompressor::decompress(
 	// content.
 	input.read(input_buf, sizeof(input_buf));
 	if (input.bad() || (input.fail() && !input.eof())) {
-		throw core::CompressorError("failed to read from input stream");
+		throw core::CompressorError{"failed to read from input stream"};
 	}
 
 	// Load the tree using dump from readed chunk.
@@ -299,7 +299,7 @@ void HuffmanDecompressor::decompress(
 			// Read the next chunk to the input buffer.
 			input.read(input_buf, sizeof(input_buf));
 			if (input.bad() || (input.fail() && !input.eof())) {
-				throw core::CompressorError("failed to read the next input chunk");
+				throw core::CompressorError{"failed to read the next input chunk"};
 			}
 			input_buf_bit_index = 0;
 		}
@@ -314,8 +314,8 @@ void HuffmanDecompressor::decompress(
 
 		// Drain the output buffer to the stream.
 		if (output.write(output_buf, sizeof(output_buf)).bad()) {
-			throw core::CompressorError(
-				"failed to write the part of decompressed content");
+			throw core::CompressorError{
+				"failed to write the part of decompressed content"};
 		}
 		std::ranges::fill(output_buf, 0);
 		output_buf_index = 0;
@@ -324,13 +324,13 @@ void HuffmanDecompressor::decompress(
 	// Try to write the leftover content of the output buffer.
 	if (output_buf_index > 0
 			&& output.write(output_buf, output_buf_index).bad()) {
-		throw core::CompressorError(
-			"failed to write the last part of compressed content");
+		throw core::CompressorError{
+			"failed to write the last part of compressed content"};
 	}
 
 	// Try to flush the output.
 	if (output.flush().bad()) {
-		throw core::CompressorError("failed to flush the output.");
+		throw core::CompressorError{"failed to flush the output"};
 	}
 }
 

@@ -1,3 +1,5 @@
+# TODO: Create separate CMakeLists.txt for algorithms/ to incapsulate algorithms
+
 cmake_minimum_required(VERSION 3.16)
 
 # Include utilities.
@@ -27,7 +29,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 qt_standard_project_setup()
 qt_add_executable(${PROJECT_NAME}
 	src/algorithm/compressor_factory.cpp
-	src/algorithm/decompressor_factory.cpp
+	src/algorithm/decompressor_factory.cpp src/algorithm/dummy.cpp
 	src/algorithm/huffman.cpp
 	src/core/freq_counter.cpp
 	src/gui/font.cpp
@@ -53,6 +55,7 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
 		src/algorithm/compressor_factory.cpp
 		src/algorithm/decompressor_factory.cpp
 		src/algorithm/huffman.cpp
+		src/algorithm/dummy.cpp
 		src/core/freq_counter.cpp
 
 		tests/core/bit.cpp
