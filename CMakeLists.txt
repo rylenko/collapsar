@@ -47,8 +47,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
 	# Fetch testing library.
 	FetchContent_Declare(googletest
-		URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip
-	)
+		URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip)
 	FetchContent_MakeAvailable(googletest)
 	# Add test files and link them with the test library.
 	add_executable(test
@@ -63,8 +62,8 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
 		tests/core/freq_counter.cpp
 		tests/algorithm/compressor_factory.cpp
 		tests/algorithm/decompressor_factory.cpp
-		tests/algorithm/huffman.cpp
-	)
+		tests/algorithm/dummy.cpp
+		tests/algorithm/huffman.cpp)
 	target_link_libraries(test gtest_main)
 
 	# Find sanitizer libraries.
