@@ -17,17 +17,12 @@ TEST(Huffman, CompressAndDecompressEmpty) {
 	// Create compressor and compress.
 	algorithm::HuffmanCompressor compressor;
 	compressor.compress(decompressed, compressed);
-
 	// Test stream states.
 	EXPECT_TRUE(decompressed.eof() && decompressed.fail() && !decompressed.bad());
 	EXPECT_TRUE(compressed.good());
-
-	// Get compressed chars.
-	const char* const compressed_chars{compressed.view().data()};
-
 	// Test that compressed stream contains only decompressed length equal to 0.
 	EXPECT_EQ(compressed.view().size(), 1);
-	EXPECT_EQ(compressed_chars[0], '0');
+	EXPECT_EQ(compressed.view()[0], '0');
 
 	// Clean decompressed stream.
 	std::stringstream{}.swap(decompressed);
@@ -36,7 +31,9 @@ TEST(Huffman, CompressAndDecompressEmpty) {
 	// Create decompressor and decompress.
 	algorithm::HuffmanDecompressor decompressor;
 	decompressor.decompress(compressed, decompressed);
-
+	// Test stream states.
+	EXPECT_TRUE(compressed.eof() && compressed.fail() && !compressed.bad());
+	EXPECT_TRUE(decompressed.good());
 	// Test that decompressed stream is empty.
 	EXPECT_EQ(decompressed.view(), "");
 }
@@ -49,16 +46,14 @@ TEST(Huffman, CompressAndDecompressSmall) {
 	// Create compressor and compress.
 	algorithm::HuffmanCompressor compressor;
 	compressor.compress(decompressed, compressed);
-
 	// Test stream states.
 	EXPECT_TRUE(decompressed.eof() && decompressed.fail() && !decompressed.bad());
 	EXPECT_TRUE(compressed.good());
-
-	// Get compressed chars.
-	const char* const compressed_chars{compressed.view().data()};
-
 	// Test compressed size.
 	EXPECT_EQ(compressed.view().size(), 20);
+
+	// Get compressed content characters.
+	const char* const compressed_chars = compressed.view().data();
 
 	// Test decompressed length.
 	EXPECT_EQ(compressed_chars[0], '1');
@@ -161,7 +156,7 @@ TEST(Huffman, CompressAndDecompressSmall) {
 	EXPECT_EQ(core::bit_get(compressed_chars, CHAR_BIT * 12 + 55), 0b1);
 	EXPECT_EQ(core::bit_get(compressed_chars, CHAR_BIT * 12 + 56), 0b0);
 
-	// Test 'd' compression.
+	// Test '!' compression.
 	EXPECT_EQ(core::bit_get(compressed_chars, CHAR_BIT * 12 + 57), 0b0);
 	EXPECT_EQ(core::bit_get(compressed_chars, CHAR_BIT * 12 + 58), 0b0);
 	EXPECT_EQ(core::bit_get(compressed_chars, CHAR_BIT * 12 + 59), 0b1);
@@ -174,7 +169,9 @@ TEST(Huffman, CompressAndDecompressSmall) {
 	// Create decompressor and decompress.
 	algorithm::HuffmanDecompressor decompressor;
 	decompressor.decompress(compressed, decompressed);
-
+	// Test stream states.
+	EXPECT_TRUE(compressed.eof() && compressed.fail() && !compressed.bad());
+	EXPECT_TRUE(decompressed.good());
 	// Test decompressed data.
 	EXPECT_EQ(decompressed.view(), "Hello, world!");
 }
