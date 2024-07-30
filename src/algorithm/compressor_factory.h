@@ -12,7 +12,7 @@ namespace algorithm {
 class CompressorFactory: public core::CompressorFactory {
 	public:
 		constexpr std::vector<std::string_view> get_names() const noexcept override {
-			return {"huffman"};
+			return {"-", "huffman"};
 		}
 
 		std::unique_ptr<core::Compressor> create(

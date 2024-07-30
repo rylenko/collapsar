@@ -1,3 +1,5 @@
+// TODO: Make docs and comments more readable.
+
 #include <QApplication>
 
 #include "algorithm/compressor_factory.h"
