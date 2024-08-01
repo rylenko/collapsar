@@ -2,8 +2,9 @@
 
 #include <QLayout>
 #include <QResizeEvent>
-#include <QStackedWidget>
 #include <QWidget>
+
+#include "gui/stacked_widget.h"
 
 namespace gui {
 
@@ -11,7 +12,7 @@ class MainWidget: public QWidget {
 	Q_OBJECT
 
 	public:
-		MainWidget(QStackedWidget* stacked_widget, QWidget* parent = nullptr);
+		MainWidget(StackedWidget* stacked_widget, QWidget* parent = nullptr);
 
 	protected:
 		void resizeEvent(QResizeEvent* event) override;
@@ -30,8 +31,7 @@ class MainWidget: public QWidget {
 		void create_receive_files_button_(QLayout* layout);
 		void create_quit_button_(QLayout* layout);
 
-		// Stacked widgets.
-		QStackedWidget* const stacked_widget_;
+		StackedWidget* const stacked_widget_;
 };
 
 }  // namespace gui

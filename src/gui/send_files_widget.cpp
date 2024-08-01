@@ -10,18 +10,18 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QStackedWidget>
 #include <QStringList>
 #include <QWidget>
 
 #include "core/compressor_factory.h"
 #include "gui/font.h"
 #include "gui/port_validator.h"
+#include "gui/stacked_widget.h"
 
 namespace gui {
 
 SendFilesWidget::SendFilesWidget(
-		QStackedWidget* const stacked_widget,
+		StackedWidget* const stacked_widget,
 		core::CompressorFactory* const compressor_factory,
 		QWidget* parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
@@ -37,10 +37,6 @@ SendFilesWidget::SendFilesWidget(
 	create_back_button_(layout);
 }
 
-void SendFilesWidget::handle_back_button_() {
-	stacked_widget_->setCurrentIndex(0);
-}
-
 void SendFilesWidget::handle_file_dialog_button_() {
 	// Open file dialog to select file names.
 	QStringList file_names =
@@ -54,6 +50,10 @@ void SendFilesWidget::handle_file_dialog_button_() {
 	for (const auto& file_name : file_names) {
 		file_names_browser_->append(file_name);
 	}
+}
+
+void SendFilesWidget::handle_back_button_() {
+	stacked_widget_->show_main_widget();
 }
 
 void SendFilesWidget::create_algorithm_choice_(

@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QLayout>
-#include <QStackedWidget>
 #include <QWidget>
+
+#include "gui/stacked_widget.h"
 
 namespace gui {
 
 class ReceiveFilesWidget: public QWidget {
 	public:
-		ReceiveFilesWidget(
-			QStackedWidget* stacked_widget, QWidget* parent = nullptr);
+		ReceiveFilesWidget(StackedWidget* stacked_widget, QWidget* parent = nullptr);
 
 	private slots:
 		void handle_back_button_();
@@ -17,7 +17,7 @@ class ReceiveFilesWidget: public QWidget {
 	private:
 		void create_back_button_(QLayout* layout);
 
-		QStackedWidget* const stacked_widget_;
+		StackedWidget* const stacked_widget_;
 };
 
 }  // namespace gui

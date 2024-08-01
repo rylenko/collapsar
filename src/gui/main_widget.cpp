@@ -7,18 +7,18 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QResizeEvent>
-#include <QStackedWidget>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include "gui/font.h"
 #include "gui/receive_files_widget.h"
 #include "gui/send_files_widget.h"
+#include "gui/stacked_widget.h"
 
 namespace gui {
 
 MainWidget::MainWidget(
-		QStackedWidget* const stacked_widget, QWidget* const parent)
+		StackedWidget* const stacked_widget, QWidget* const parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create main layout.
 	QVBoxLayout* const layout = new QVBoxLayout{this};
@@ -44,12 +44,12 @@ void MainWidget::resizeEvent(QResizeEvent* event) {
 	adjust_margins_();
 }
 
-void MainWidget::handle_send_files_button_() {
-	stacked_widget_->setCurrentIndex(1);
+void MainWidget::handle_receive_files_button_() {
+	stacked_widget_->show_receive_files_widget();
 }
 
-void MainWidget::handle_receive_files_button_() {
-	stacked_widget_->setCurrentIndex(2);
+void MainWidget::handle_send_files_button_() {
+	stacked_widget_->show_send_files_widget();
 }
 
 void MainWidget::adjust_margins_() {

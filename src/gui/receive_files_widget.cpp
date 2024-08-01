@@ -5,15 +5,15 @@
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
-#include <QStackedWidget>
 #include <QWidget>
 
 #include "gui/font.h"
+#include "gui/stacked_widget.h"
 
 namespace gui {
 
 ReceiveFilesWidget::ReceiveFilesWidget(
-		QStackedWidget* const stacked_widget, QWidget* parent)
+		StackedWidget* const stacked_widget, QWidget* parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
 	// Create grid layout and set it to the widget.
 	QLayout* const layout = new QGridLayout{this};
@@ -29,7 +29,7 @@ ReceiveFilesWidget::ReceiveFilesWidget(
 }
 
 void ReceiveFilesWidget::handle_back_button_() {
-	stacked_widget_->setCurrentIndex(0);
+	stacked_widget_->show_main_widget();
 }
 
 void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {

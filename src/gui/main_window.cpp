@@ -1,5 +1,3 @@
-// TODO: Doc stacked widget, add enum Page::Main, Page::SendFiles, Page::ReceiveFiles
-
 #include "gui/main_window.h"
 
 #include <QColor>
@@ -27,11 +25,13 @@ MainWindow::MainWindow(
 
 QStackedWidget* MainWindow::create_stacked_widget(
 		core::CompressorFactory* const compressor_factory) {
-	QStackedWidget* const stacked_widget = new QStackedWidget{this};
-	stacked_widget->addWidget(new MainWidget{stacked_widget, this});
-	stacked_widget->addWidget(
+	// Create new stacked widget.
+	StackedWidget* const stacked_widget = new StackedWidget{this};
+	// Add all application widget to stacked widget.
+	stacked_widget->add_widgets(
+		new MainWidget{stacked_widget, this},
+		new ReceiveFilesWidget{stacked_widget, this},
 		new SendFilesWidget{stacked_widget, compressor_factory, this});
-	stacked_widget->addWidget(new ReceiveFilesWidget{stacked_widget, this});
 
 	return stacked_widget;
 }
