@@ -5,12 +5,12 @@
 #include <QColor>
 #include <QMainWindow>
 #include <QPalette>
-#include <QStackedWidget>
 
 #include "core/compressor_factory.h"
 #include "gui/main_widget.h"
 #include "gui/receive_files_widget.h"
 #include "gui/send_files_widget.h"
+#include "gui/stacked_widget.h"
 
 namespace gui {
 
