@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFormLayout>
 #include <QLayout>
 #include <QWidget>
 
@@ -16,6 +17,7 @@ class ReceiveFilesWidget: public QWidget {
 
 	private:
 		void create_back_button_(QLayout* layout);
+		void create_port_input_(QFormLayout* layout);
 
 		StackedWidget* const stacked_widget_;
 };

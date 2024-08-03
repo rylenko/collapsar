@@ -25,7 +25,7 @@ SendFilesWidget::SendFilesWidget(
 		core::CompressorFactory* const compressor_factory,
 		QWidget* parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
-	// Create grid layout and set it to the widget.
+	// Create layout and set it to the widget.
 	QFormLayout* const layout = new QFormLayout{this};
 
 	// Create widgets.

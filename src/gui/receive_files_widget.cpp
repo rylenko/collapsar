@@ -1,13 +1,15 @@
 #include "gui/receive_files_widget.h"
 
 #include <QFont>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QWidget>
 
 #include "gui/font.h"
+#include "gui/port_validator.h"
 #include "gui/stacked_widget.h"
 
 namespace gui {
@@ -15,16 +17,11 @@ namespace gui {
 ReceiveFilesWidget::ReceiveFilesWidget(
 		StackedWidget* const stacked_widget, QWidget* parent)
 		: QWidget{parent}, stacked_widget_{stacked_widget} {
-	// Create grid layout and set it to the widget.
-	QLayout* const layout = new QGridLayout{this};
-
-	// Create label and change its font size.
-	QLabel* const label = new QLabel{this};
-	label->setText(tr("Receiving files widget."));
-	set_font(label);
-	layout->addWidget(label);
+	// Create layout and set it to the widget.
+	QFormLayout* const layout = new QFormLayout{this};
 
 	// Create widgets.
+	create_port_input_(layout);
 	create_back_button_(layout);
 }
 
@@ -44,6 +41,21 @@ void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
 		&QPushButton::clicked,
 		this,
 		&ReceiveFilesWidget::handle_back_button_);
+}
+
+void ReceiveFilesWidget::create_port_input_(QFormLayout* const layout) {
+	// Create input label and set font to it.
+	QLabel* const label = new QLabel{tr("Listen port:"), this};
+	set_font(label);
+
+	// Create input, set placeholder, validator and font.
+	QLineEdit* const input = new QLineEdit{this};
+	input->setPlaceholderText(tr("8888"));
+	input->setValidator(new PortValidator{this});
+	set_font(input);
+
+	// Add label and input to the layout.
+	layout->addRow(label, input);
 }
 
 }  // namespace gui
