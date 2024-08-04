@@ -116,17 +116,13 @@ class Tree {
 		// Constructs empty tree.
 		constexpr Tree() noexcept = default;
 
-		// Counts the frequencies of content from the `input`, then builds a tree,
-		// where the more frequent characters are closer to the root.
-		//
-		// After successfully construction, the stream must be in the EOF state:
-		// eofbit and failbit.
+		// Builds a tree, where the more frequent characters are closer to the root.
 		explicit Tree(const core::FreqCounter& freq_counter) noexcept;
 
 		// Destructs the built tree.
 		constexpr ~Tree() noexcept;
 
-		// Calculate paths. So this function calculates tree path for each character.
+		// Calculates paths for each tree character.
 		TreePaths calculate_paths() const noexcept;
 
 		// Dumps the tree to the passed buffer starting from passed bit index. Note
@@ -371,14 +367,14 @@ constexpr void TreeNode::calculate_paths(
 		}
 		left_->calculate_paths(paths, buf, buf_index + 1);
 
-		// Continue recursion through left branch from current buffer position.
+		// Continue recursion through right branch from current buffer position.
 		//
 		// The buffer size is sufficient here because we expanded it earlier to the
 		// current level.
 		buf[buf_index] = TreeDirection::Right;
 		right_->calculate_paths(paths, buf, buf_index + 1);
 	} else {
-		// Copy current buffer to the paths map.
+		// Copy character path buffer to the paths map.
 		std::copy_n(buf.begin(), buf_index, std::back_inserter(paths[ch_]));
 	}
 }
