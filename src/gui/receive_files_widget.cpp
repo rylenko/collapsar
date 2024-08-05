@@ -22,11 +22,16 @@ ReceiveFilesWidget::ReceiveFilesWidget(
 
 	// Create widgets.
 	create_port_input_(layout);
+	create_listen_button_(layout);
 	create_back_button_(layout);
 }
 
 void ReceiveFilesWidget::handle_back_button_() {
 	stacked_widget_->show_main_widget();
+}
+
+void ReceiveFilesWidget::handle_listen_button_() {
+	// TODO: Make port field inactive.
 }
 
 void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
@@ -41,6 +46,20 @@ void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
 		&QPushButton::clicked,
 		this,
 		&ReceiveFilesWidget::handle_back_button_);
+}
+
+void ReceiveFilesWidget::create_listen_button_(QLayout* const layout) {
+	// Create button, set font to it and add it to the layout.
+	QPushButton* const button = new QPushButton{tr("&Listen"), this};
+	set_font(button);
+	layout->addWidget(button);
+
+	// Connect button to the handler.
+	connect(
+		button,
+		&QPushButton::clicked,
+		this,
+		&ReceiveFilesWidget::handle_listen_button_);
 }
 
 void ReceiveFilesWidget::create_port_input_(QFormLayout* const layout) {
