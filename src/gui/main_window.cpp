@@ -13,8 +13,9 @@
 namespace gui {
 
 MainWindow::MainWindow(
-		core::CompressorFactory* const compressor_factory, QWidget* parent)
-		: QMainWindow{parent} {
+	core::CompressorFactory* const compressor_factory, QWidget* parent)
+	: QMainWindow{parent}
+{
 	// Create stacked widget and make it central.
 	setCentralWidget(create_stacked_widget(compressor_factory));
 	// Set title.
@@ -23,8 +24,10 @@ MainWindow::MainWindow(
 	set_dark_theme_();
 }
 
-QStackedWidget* MainWindow::create_stacked_widget(
-		core::CompressorFactory* const compressor_factory) {
+QStackedWidget*
+MainWindow::create_stacked_widget(
+	core::CompressorFactory* const compressor_factory)
+{
 	// Create new stacked widget.
 	StackedWidget* const stacked_widget = new StackedWidget{this};
 	// Add all application widget to stacked widget.

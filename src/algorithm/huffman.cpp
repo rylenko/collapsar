@@ -146,8 +146,10 @@ class Tree {
 
 // Dumps the tree direction bit to the passed buffer at the passed bit index.
 // Then it increments the passed bit index.
-constexpr void huffman_tree_direction_dump(
-		TreeDirection direction, char* const buf, size_t& bit_index) noexcept {
+constexpr void
+huffman_tree_direction_dump(
+	TreeDirection direction, char* const buf, size_t& bit_index) noexcept
+{
 	switch (direction) {
 	case TreeDirection::Left:
 		core::bit_clear(buf, bit_index);
@@ -245,8 +247,9 @@ void HuffmanCompressor::compress(std::istream& input, std::ostream& output) {
 }
 
 // TODO: Make more readable, split into small functions.
-void HuffmanDecompressor::decompress(
-		std::istream& input, std::ostream& output) {
+void
+HuffmanDecompressor::decompress(std::istream& input, std::ostream& output)
+{
 	// Read decompressed content size.
 	uint64_t decompressed_size;
 	input >> decompressed_size;
@@ -330,14 +333,17 @@ void HuffmanDecompressor::decompress(
 	}
 }
 
-constexpr TreeNode::TreeNode(const char ch, const uint64_t freq) noexcept
-		: ch_{ch}, freq_{freq} {
+constexpr
+TreeNode::TreeNode(const char ch, const uint64_t freq) noexcept
+	: ch_{ch}, freq_{freq}
+{
 	assert(freq > 0 && "zero frequency is useless for the tree building");
 }
 
-constexpr TreeNode::TreeNode(
-		TreeNode* const left, TreeNode* const right) noexcept
-		: left_{left}, right_{right} {
+constexpr
+TreeNode::TreeNode(TreeNode* const left, TreeNode* const right) noexcept
+	: left_{left}, right_{right}
+{
 	// A grouping node must contain both left and right branches.
 	assert(nullptr != left && nullptr != right && "they must not be `nullptr`");
 
@@ -346,18 +352,24 @@ constexpr TreeNode::TreeNode(
 	assert(freq_ > 0 && "zero frequency is useless for the tree building");
 }
 
-constexpr TreeNode::~TreeNode() noexcept {
+constexpr
+TreeNode::~TreeNode() noexcept
+{
 	// Deallocate branches or do nothing if they are `nullptr`.
 	delete left_;
 	delete right_;
 }
 
-constexpr bool operator<(const TreeNode& x, const TreeNode& y) noexcept {
+constexpr bool
+operator<(const TreeNode& x, const TreeNode& y) noexcept
+{
 	return x.freq_ > y.freq_;
 }
 
-constexpr void TreeNode::calculate_paths(
-		TreePaths& paths, TreePath& buf, const size_t buf_index) const noexcept {
+constexpr void
+TreeNode::calculate_paths(
+	TreePaths& paths, TreePath& buf, const size_t buf_index) const noexcept
+{
 	if (is_group()) {
 		// Continue recursion through left branch from current buffer position.
 		if (buf_index >= buf.size()) {
@@ -379,8 +391,9 @@ constexpr void TreeNode::calculate_paths(
 	}
 }
 
-constexpr void TreeNode::dump(
-		char* const buf, size_t& bit_index) const noexcept {
+constexpr void
+TreeNode::dump(char* const buf, size_t& bit_index) const noexcept
+{
 	if (is_group()) {
 		// Set the bit, which means that we have a grouping node.
 		core::bit_set(buf, bit_index);
@@ -400,26 +413,35 @@ constexpr void TreeNode::dump(
 	}
 }
 
-constexpr char TreeNode::get_ch() const noexcept {
+constexpr char
+TreeNode::get_ch() const noexcept
+{
 	return ch_;
 }
 
-constexpr const TreeNode* TreeNode::get_left() const noexcept {
+constexpr const TreeNode*
+TreeNode::get_left() const noexcept
+{
 	return left_;
 }
 
-constexpr const TreeNode* TreeNode::get_right() const noexcept {
+constexpr const TreeNode*
+TreeNode::get_right() const noexcept
+{
 	return right_;
 }
 
-constexpr bool TreeNode::is_group() const noexcept {
+constexpr bool
+TreeNode::is_group() const noexcept
+{
 	// There is no need to check right node against `nullptr` because a grouping
 	// node has either 0 branches or both.
 	return nullptr != left_;
 }
 
-constexpr void TreeNode::load(
-		const char* const buf, size_t& bit_index) noexcept {
+constexpr void
+TreeNode::load(const char* const buf, size_t& bit_index) noexcept
+{
 	// Destruct and deallocate left and right branches of old node.
 	delete left_;
 	delete right_;
@@ -451,7 +473,8 @@ constexpr void TreeNode::load(
 	}
 }
 
-Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
+Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr}
+{
 	// Create character nodes with corresponding frequencies greater than 0.
 	std::vector<TreeNode*> nodes;
 	for (const auto& [ch, count] : freq_counter) {
@@ -475,12 +498,16 @@ Tree::Tree(const core::FreqCounter& freq_counter) noexcept: root_{nullptr} {
 	}
 }
 
-constexpr Tree::~Tree() noexcept {
+constexpr
+Tree::~Tree() noexcept
+{
 	// Free allocated root node or do nothing if it is nullptr.
 	delete root_;
 }
 
-TreePaths Tree::calculate_paths() const noexcept {
+TreePaths
+Tree::calculate_paths() const noexcept
+{
 	TreePaths paths;
 	if (nullptr != root_) {
 		// Calculate paths recursively using buffer from the root node.
@@ -490,17 +517,23 @@ TreePaths Tree::calculate_paths() const noexcept {
 	return paths;
 }
 
-constexpr void Tree::dump(char* const buf, size_t& bit_index) const noexcept {
+constexpr void
+Tree::dump(char* const buf, size_t& bit_index) const noexcept
+{
 	if (nullptr != root_) {
 		root_->dump(buf, bit_index);
 	}
 }
 
-constexpr const TreeNode* Tree::get_root() const noexcept {
+constexpr const TreeNode*
+Tree::get_root() const noexcept
+{
 	return root_;
 }
 
-constexpr void Tree::load(const char* const buf, size_t& bit_index) noexcept {
+constexpr void
+Tree::load(const char* const buf, size_t& bit_index) noexcept
+{
 	// Destruct and deallocate current tree to store a new tree.
 	delete root_;
 

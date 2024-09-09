@@ -5,8 +5,9 @@
 
 namespace gui {
 
-QValidator::State PortValidator::validate(
-		QString& input, [[maybe_unused]] int& pos) const {
+QValidator::State
+PortValidator::validate(QString& input, [[maybe_unused]] int& pos) const
+{
 	// Empty input is invalid port number.
 	if (input.isEmpty())
 		return QValidator::State::Intermediate;

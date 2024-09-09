@@ -6,7 +6,9 @@
 
 namespace core {
 
-std::istream& operator>>(std::istream& stream, FreqCounter& counter) {
+std::istream&
+operator>>(std::istream& stream, FreqCounter& counter)
+{
 	// Count characters from the passed stream.
 	for (char ch; stream.get(ch);) {
 		counter.count_(ch);
@@ -19,7 +21,9 @@ std::istream& operator>>(std::istream& stream, FreqCounter& counter) {
 	return stream;
 }
 
-void FreqCounter::count_(const char ch) noexcept {
+void
+FreqCounter::count_(const char ch) noexcept
+{
 	counts_[ch]++;
 	total_++;
 }

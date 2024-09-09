@@ -24,18 +24,24 @@ class FreqCounter {
 		friend std::istream& operator>>(std::istream& input, FreqCounter& counter);
 
 		// Returns an iterator to the first element of the counts map.
-		inline Counts::const_iterator begin() const noexcept {
+		inline Counts::const_iterator
+		begin() const noexcept
+		{
 			return counts_.begin();
 		}
 
 		// Returns an iterator to the element following last element of the counts
 		// map.
-		inline Counts::const_iterator end() const noexcept {
+		inline Counts::const_iterator
+		end() const noexcept
+		{
 			return counts_.end();
 		}
 
 		// Returns total count of characters.
-		constexpr uint64_t get_total() const noexcept {
+		constexpr uint64_t
+		get_total() const noexcept
+		{
 			return total_;
 		}
 

@@ -15,8 +15,9 @@
 namespace gui {
 
 ReceiveFilesWidget::ReceiveFilesWidget(
-		StackedWidget* const stacked_widget, QWidget* parent)
-		: QWidget{parent}, stacked_widget_{stacked_widget} {
+	StackedWidget* const stacked_widget, QWidget* parent)
+	: QWidget{parent}, stacked_widget_{stacked_widget}
+{
 	// Create layout and set it to the widget.
 	QFormLayout* const layout = new QFormLayout{this};
 
@@ -26,15 +27,21 @@ ReceiveFilesWidget::ReceiveFilesWidget(
 	create_back_button_(layout);
 }
 
-void ReceiveFilesWidget::handle_back_button_() {
+void
+ReceiveFilesWidget::handle_back_button_()
+{
 	stacked_widget_->show_main_widget();
 }
 
-void ReceiveFilesWidget::handle_listen_button_() {
+void
+ReceiveFilesWidget::handle_listen_button_()
+{
 	// TODO: Make port field inactive.
 }
 
-void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
+void
+ReceiveFilesWidget::create_back_button_(QLayout* const layout)
+{
 	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Back"), this};
 	set_font(button);
@@ -48,7 +55,9 @@ void ReceiveFilesWidget::create_back_button_(QLayout* const layout) {
 		&ReceiveFilesWidget::handle_back_button_);
 }
 
-void ReceiveFilesWidget::create_listen_button_(QLayout* const layout) {
+void
+ReceiveFilesWidget::create_listen_button_(QLayout* const layout)
+{
 	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Listen"), this};
 	set_font(button);
@@ -62,7 +71,9 @@ void ReceiveFilesWidget::create_listen_button_(QLayout* const layout) {
 		&ReceiveFilesWidget::handle_listen_button_);
 }
 
-void ReceiveFilesWidget::create_port_input_(QFormLayout* const layout) {
+void
+ReceiveFilesWidget::create_port_input_(QFormLayout* const layout)
+{
 	// Create input label and set font to it.
 	QLabel* const label = new QLabel{tr("Listen port:"), this};
 	set_font(label);

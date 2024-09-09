@@ -11,8 +11,9 @@
 
 namespace algorithm {
 
-std::unique_ptr<core::Decompressor> DecompressorFactory::create(
-		const std::string_view name) const {
+std::unique_ptr<core::Decompressor>
+DecompressorFactory::create(const std::string_view name) const
+{
 	if ("no decompression" == name) {
 		return std::make_unique<DummyDecompressor>();
 	} else if ("huffman" == name) {

@@ -21,10 +21,11 @@
 namespace gui {
 
 SendFilesWidget::SendFilesWidget(
-		StackedWidget* const stacked_widget,
-		core::CompressorFactory* const compressor_factory,
-		QWidget* parent)
-		: QWidget{parent}, stacked_widget_{stacked_widget} {
+	StackedWidget* const stacked_widget,
+	core::CompressorFactory* const compressor_factory,
+	QWidget* parent)
+	: QWidget{parent}, stacked_widget_{stacked_widget}
+{
 	// Create layout and set it to the widget.
 	QFormLayout* const layout = new QFormLayout{this};
 
@@ -37,7 +38,9 @@ SendFilesWidget::SendFilesWidget(
 	create_back_button_(layout);
 }
 
-void SendFilesWidget::handle_file_dialog_button_() {
+void
+SendFilesWidget::handle_file_dialog_button_()
+{
 	// Open file dialog to select file names.
 	QStringList file_names =
 		QFileDialog::getOpenFileNames(this, tr("Select one or more files"));
@@ -52,13 +55,16 @@ void SendFilesWidget::handle_file_dialog_button_() {
 	}
 }
 
-void SendFilesWidget::handle_back_button_() {
+void
+SendFilesWidget::handle_back_button_()
+{
 	stacked_widget_->show_main_widget();
 }
 
-void SendFilesWidget::create_algorithm_choice_(
-		QFormLayout* const layout,
-		core::CompressorFactory* const compressor_factory) {
+void
+SendFilesWidget::create_algorithm_choice_(
+	QFormLayout* const layout, core::CompressorFactory* const compressor_factory)
+{
 	// Create combo box label and set font to it.
 	QLabel* const label = new QLabel{tr("Algorithm:"), this};
 	set_font(label);
@@ -74,7 +80,9 @@ void SendFilesWidget::create_algorithm_choice_(
 	layout->addRow(label, box);
 }
 
-void SendFilesWidget::create_back_button_(QLayout* const layout) {
+void
+SendFilesWidget::create_back_button_(QLayout* const layout)
+{
 	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Back"), this};
 	set_font(button);
@@ -85,7 +93,9 @@ void SendFilesWidget::create_back_button_(QLayout* const layout) {
 		button, &QPushButton::clicked, this, &SendFilesWidget::handle_back_button_);
 }
 
-void SendFilesWidget::create_file_dialog_button_(QLayout* const layout) {
+void
+SendFilesWidget::create_file_dialog_button_(QLayout* const layout)
+{
 	// Create button, set font to it and add it to the layout.
 	QPushButton* const button = new QPushButton{tr("&Select files"), this};
 	set_font(button);
@@ -99,7 +109,9 @@ void SendFilesWidget::create_file_dialog_button_(QLayout* const layout) {
 		&SendFilesWidget::handle_file_dialog_button_);
 }
 
-void SendFilesWidget::create_file_names_browser_(QFormLayout* const layout) {
+void
+SendFilesWidget::create_file_names_browser_(QFormLayout* const layout)
+{
 	// Create browser label and set font to it.
 	QLabel* const label = new QLabel{tr("Files:"), this};
 	set_font(label);
@@ -112,7 +124,9 @@ void SendFilesWidget::create_file_names_browser_(QFormLayout* const layout) {
 	layout->addRow(label, file_names_browser_);
 }
 
-void SendFilesWidget::create_host_input_(QFormLayout* const layout) {
+void
+SendFilesWidget::create_host_input_(QFormLayout* const layout)
+{
 	// Create input label and set font to it.
 	QLabel* const label = new QLabel{tr("Host:"), this};
 	set_font(label);
@@ -126,7 +140,9 @@ void SendFilesWidget::create_host_input_(QFormLayout* const layout) {
 	layout->addRow(label, input);
 }
 
-void SendFilesWidget::create_port_input_(QFormLayout* const layout) {
+void
+SendFilesWidget::create_port_input_(QFormLayout* const layout)
+{
 	// Create input label and set font to it.
 	QLabel* const label = new QLabel{tr("Port:"), this};
 	set_font(label);

@@ -18,8 +18,9 @@
 namespace gui {
 
 MainWidget::MainWidget(
-		StackedWidget* const stacked_widget, QWidget* const parent)
-		: QWidget{parent}, stacked_widget_{stacked_widget} {
+	StackedWidget* const stacked_widget, QWidget* const parent)
+	: QWidget{parent}, stacked_widget_{stacked_widget}
+{
 	// Create main layout.
 	QVBoxLayout* const layout = new QVBoxLayout{this};
 
@@ -36,7 +37,9 @@ MainWidget::MainWidget(
 	layout->addLayout(buttons_layout);
 }
 
-void MainWidget::resizeEvent(QResizeEvent* event) {
+void
+MainWidget::resizeEvent(QResizeEvent* event)
+{
 	// Call parent method.
 	QWidget::resizeEvent(event);
 
@@ -44,15 +47,21 @@ void MainWidget::resizeEvent(QResizeEvent* event) {
 	adjust_margins_();
 }
 
-void MainWidget::handle_receive_files_button_() {
+void
+MainWidget::handle_receive_files_button_()
+{
 	stacked_widget_->show_receive_files_widget();
 }
 
-void MainWidget::handle_send_files_button_() {
+void
+MainWidget::handle_send_files_button_()
+{
 	stacked_widget_->show_send_files_widget();
 }
 
-void MainWidget::adjust_margins_() {
+void
+MainWidget::adjust_margins_()
+{
 	// Calculate width and height margins.
 	int width_margins = width() * 0.25;
 	int height_margins = height() * 0.45;
@@ -62,7 +71,9 @@ void MainWidget::adjust_margins_() {
 		width_margins, height_margins, width_margins, height_margins);
 }
 
-void MainWidget::create_title_(QLayout* const layout) {
+void
+MainWidget::create_title_(QLayout* const layout)
+{
 	// Create title, align it, set text with font and add title to the layout.
 	QLabel* const title = new QLabel{this};
 	title->setAlignment(Qt::AlignCenter);
@@ -71,7 +82,9 @@ void MainWidget::create_title_(QLayout* const layout) {
 	layout->addWidget(title);
 }
 
-void MainWidget::create_send_files_button_(QLayout* const layout) {
+void
+MainWidget::create_send_files_button_(QLayout* const layout)
+{
 	// Create button, add font and add button to the layout.
 	QPushButton* const button = new QPushButton{tr("&Send files"), this};
 	set_font(button);
@@ -85,7 +98,9 @@ void MainWidget::create_send_files_button_(QLayout* const layout) {
 		&MainWidget::handle_send_files_button_);
 }
 
-void MainWidget::create_receive_files_button_(QLayout* const layout) {
+void
+MainWidget::create_receive_files_button_(QLayout* const layout)
+{
 	// Create button, add font and add button to the layout.
 	QPushButton* const button = new QPushButton{tr("&Receive files"), this};
 	set_font(button);
@@ -99,7 +114,9 @@ void MainWidget::create_receive_files_button_(QLayout* const layout) {
 		&MainWidget::handle_receive_files_button_);
 }
 
-void MainWidget::create_quit_button_(QLayout* const layout) {
+void
+MainWidget::create_quit_button_(QLayout* const layout)
+{
 	// Create button, add font and add button to the layout.
 	QPushButton* const button = new QPushButton{tr("&Quit"), this};
 	set_font(button);
